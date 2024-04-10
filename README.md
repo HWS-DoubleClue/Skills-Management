@@ -27,6 +27,9 @@ To better match users with positions that require a certain skill set, you can d
 ### Detailed User Search
 Skills comes with a detailed user search, enabling you to look for users with certain skills, certificates or skill profiles in your enterprise. You can further restricht the results to certain skill levels or skill profiles with a defined match value.
 
+### Automatic E-Mail Notification for Users and Heads of Department
+Both employeers and their Heads of Departments can edit a users profile and add or edit their skills and certificates. For more transparancy, Skills will sent automatic e-mail notifications to inform users about changes made to their profile by a superior and department heads about changes made by a members of their team.
+
 
 ## [Try it out for free](https://doubleclue.online/dcem/createTenant/index.xhtml)
 

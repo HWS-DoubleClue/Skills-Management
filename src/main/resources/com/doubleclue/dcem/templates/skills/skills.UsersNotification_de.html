@@ -1,0 +1,25 @@
+<html>
+
+<body>
+		<p></p><br>
+		<p></p>
+		<div id="wrapper">
+			Hallo ${HeadOfDepartment},
+			<p></p>
+			${Admin} hat Änderungen an den Skills von ${User} vorgenommen.
+
+			<#list changedSkills as skill, level>
+				<div style="float: left; width: 100%;">
+					<span style="float: left; width: 48%;">
+						<li>${skill} von ${level[0]} zu ${level[1]}</li>
+					</span>
+
+				</div>
+			</#list>
+			<p></p><br>
+
+		</div>
+
+</body>
+
+</html>

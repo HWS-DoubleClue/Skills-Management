@@ -1,0 +1,35 @@
+<html>
+
+<head>
+	<style>
+	th, td {
+  padding: 15px;
+}
+</style>
+</head>
+	
+<body>
+
+
+		<p></p><br>
+		<p></p>
+		<div id="wrapper">
+			Hello ${HeadOfDepartment},
+			<p></p>
+			${Admin} just made changes to the skills of ${User}:
+
+			<#list changedSkills as skill, level>
+				<div style="float: left; width: 100%;">
+					<span style="float: left; width: 48%;">
+						<li>${skill} From ${level[0]} To ${level[1]}</li>
+					</span>
+					
+				</div>
+			</#list>
+
+			<p></p><br>
+		</div>
+
+</body>
+
+</html>

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:include src="/mgt/modules/dialogHead.xhtml" />
+
+<style>
+.ui-panel {
+	margin: 0.2em;
+	width: 98%;
+}
+
+.ui-dashboard-column {
+	width: 50%;
+}
+
+.controls {
+	margin-right: 400px
+}
+
+.ui-datatable .ui-column-filter {
+	width: 12em !Important;
+	display: inline !Important;
+}
+
+.ui-datatable .ui-column-customfilter {
+	display: inline;
+}
+
+.verticalAlign {
+	vertical-align: top;
+}
+
+.datePickerInput .ui-inputfield {
+	width: 100px;
+}
+</style>
+
+	<f:view locale="#{operatorSession.locale}">
+		<h:body>
+			<h:form id="dashboardform">
+				<p:defaultCommand target="buttonSearchSkill" />
+				<p:spacer width="15" />
+
+				<p:commandLink rendered="#{skillsDashboardView.isEditSkillsPermitted()}" action="#{skillsDashboardView.actionEditSkills}" icon="">
+					<h:outputText style="font-size: large" class="fa fa-edit" />
+					<h:outputText style="font-size: large" value=" #{SkillsMsg['AUTO_ACTION.edit']}" />
+					<p:ajax event="dialogReturn" listener="#{skillsDashboardView.reload()}" update="dashboardform" />
+				</p:commandLink>
+
+				<h:panelGroup rendered="#{skillsDashboardView.searchRights}">
+					<p:panel id="searchForSkillPanel" widgetVar="searchForSkillPanel" toggleable="true">
+						<f:facet name="header">
+							<h:outputText style="margin-right: 0.3em;" class="fa fa-magnifying-glass" />
+							<h:outputText value="#{SkillsMsg['skillsDashboard.searchUserWithSkill']}" />
+						</f:facet>
+						<div align="center">
+							<p:inputText id="skillsearch" placeholder="#{SkillsMsg['skillsDashboard.search']}" value="#{skillsDashboardView.skillSearchName}" />
+
+							<p:spacer width="10" />
+							<p:commandButton id="buttonSearchSkill" value="#{SkillsMsg['skillsDashboard.search']}" icon="fa fa-magnifying-glass"
+								action="#{skillsDashboardView.actionSearch()}" update="userTable skillsProperties" />
+							<p:spacer width="30" />
+							<p:commandButton id="settings" value="#{SkillsMsg['skillsDashboard.filter']}" type="button" icon="fa fa-filter" />
+							<p:spacer width="30" />
+							<p:tooltip for="info" value="#{SkillsMsg['skillsDashboard.advancedSkillSearch']}" position="top" escape="false" />
+							<h:outputText id="info" value="" class="fa fa-circle-info" style="font-size: x-large; color: #005078; vertical-align: -3px;" />
+
+
+							<div align="left">
+								<p:overlayPanel id="overlayPanel" for="settings" dismissable="true" showCloseIcon="true" widgetVar="overlayPanel">
+									<h3>Filter</h3>
+									<p:selectBooleanCheckbox itemLabel="#{SkillsMsg['skillsDashboard.certificates']}" value="#{skillsDashboardView.certificateFilter}"
+										style="margin-left: 3px; margin-bottom: 9px" />
+									<br></br>
+									<h:panelGrid columns="2">
+										<p:selectBooleanCheckbox itemLabel="#{SkillsMsg['skillsDashboard.skillsWithMinLevel']}" value="#{skillsDashboardView.skillsFilter}">
+											<p:ajax event="change" update="level owned-skills" />
+										</p:selectBooleanCheckbox>
+										<p:selectOneMenu id="level" value="#{skillsDashboardView.selectedLevelFilter}" disabled="#{skillsDashboardView.skillsFilter == false}">
+											<f:selectItems value="#{skillsDashboardView.getSkillsLevel()}" />
+											<p:ajax event="change" update="level" />
+										</p:selectOneMenu>
+									</h:panelGrid>
+									<p:selectBooleanCheckbox id="owned-skills" itemLabel="#{SkillsMsg['skillsDashboard.skillsOnlyOwnedFilter']}" value="#{skillsDashboardView.skillsOnlyOwnedFilter}"
+										style="margin-left: 3px; margin-bottom: 9px;  margin-top: 9px" disabled="#{skillsDashboardView.skillsFilter == false}"  >
+										<p:ajax event="change" update="owned-skills" />
+									</p:selectBooleanCheckbox>
+									<h:panelGrid columns="2">
+										<p:selectBooleanCheckbox itemLabel="#{SkillsMsg['skillsDashboard.jobWithMinLevel']}" value="#{skillsDashboardView.jobProfileFilter}">
+											<p:ajax event="change" update="jobProfileMatch" />
+										</p:selectBooleanCheckbox>
+										<h:panelGrid id="jobProfileMatch" columns="2">
+											<p:inputNumber value="#{skillsDashboardView.searchJobProfileMatch}" size="1" disabled="#{skillsDashboardView.jobProfileFilter == false}" />
+											<h:outputText value="%" rendered="#{skillsDashboardView.jobProfileFilter}" />
+										</h:panelGrid>
+									</h:panelGrid>
+									<p:commandButton value="#{CoreMsg['ok']}" onclick="PF('overlayPanel').hide()" update="userTable"
+										action="#{skillsDashboardView.actionSaveFilterToBrowser()}" />
+									<p:ajax event="hide" listener="#{skillsDashboardView.actionSaveFilterToBrowser()}" />
+								</p:overlayPanel>
+							</div>
+							<p></p>
+						</div>
+						<p:dataTable widgetVar="userTableVar" id="userTable" value="#{skillsDashboardView.searchSkillUser}" var="skillsUser" rowKey="#{skillsUser.id}">
+							<p:column id="searchName" headerText="#{SkillsMsg['Skills.skills_name']}" sortOrder="asc" sortBy="#{skillsUser.skillsUserEntity.dcemUser.displayName}"
+								filterBy="#{skillsUser.skillsUserEntity.dcemUser.displayName}" filterMatchMode="contains">
+
+								<p:avatar style="vertical-align: middle;" styleClass="p-mr-2" size="xlarge" shape="circle">
+									<p:graphicImage value="#{skillsDashboardView.getUserPhoto(skillsUser.skillsUserEntity.dcemUser)}" stream="false" />
+								</p:avatar>
+								&nbsp;
+								<p:commandLink style="#{skillsDashboardView.userStyle(skillsUser)}" value="#{skillsUser.skillsUserEntity.dcemUser.displayName}"
+									update="dashboardform:skillsProperties dashboardform:userTable dashboardform:showMySkills"
+									action="#{skillsDashboardView.actionShowUserSkills(skillsUser)}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['skillsDashboard.department']}" sortBy="#{skillsUser.skillsUserEntity.dcemUser.departmentName}"
+								filterBy="#{skillsUser.skillsUserEntity.dcemUser.departmentName}" filterMatchMode="contains">
+								<h:outputText value="#{skillsUser.skillsUserEntity.dcemUser.departmentName}" />
+							</p:column>
+
+							<p:column headerText="" style="text-align: center" filterBy="#{skillsUser.skillsUserEntity}"
+								filterFunction="#{skillsDashboardView.actionFilterByAvailableDate}">
+								<f:facet name="filter">
+									<p:datePicker oncomplete="PF('userTableVar').filter()" id="availableFromDate" showIcon="true" showButtonBar="true" yearNavigator="true"
+										locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}" styleClass="datePickerInput">
+										<p:ajax event="dateSelect" oncomplete="PF('userTableVar').filter()" />
+										<p:watermark value="#{SkillsMsg['Skills.availability']}" for="availableFromDate"></p:watermark>
+									</p:datePicker>
+								</f:facet>
+								<h:outputText value="#{skillsDashboardView.getAvailability(skillsUser.skillsUserEntity)}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['skillsDashboard.skillsResult']}" sortBy="#{skillsDashboardView.getTruncateLength(skillsUser.skills)}">
+								<h:outputText value="#{skillsDashboardView.getStyledSkillsResult(skillsUser.skills)}" escape="false" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['skillsDashboard.certificatesResult']}">
+								<h:outputText value="#{skillsUser.certificates}" rendered="#{not empty skillsUser.certificates}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['skillsDashboard.jobProfileResult']}">
+								<h:outputText value="#{skillsUser.jobProfiles}" rendered="#{not empty skillsUser.jobProfiles}" />
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+				</h:panelGroup>
+				&nbsp;
+				<h:panelGroup id="showMySkills" style="float: right; margin-right: 2em">
+					<p:commandLink style="margin-left: 2em" actionListener="#{skillsDashboardView.actionShowMySkills}" value="#{SkillsMsg['skillsDashboard.showMySkills']}"
+						update="dashboardform:skillsProperties dashboardform:userTable">
+						<i class="fa-solid fa-angles-down"></i>
+					</p:commandLink>
+				</h:panelGroup>
+				<h:panelGroup id="skillsProperties">
+					<p:panel id="skillsPropertiesPanel" widgetVar="skillsPropertiesPanel" closable="true"
+						rendered="#{skillsDashboardView.selectedUser ne null}">
+						<p:ajax event="close" listener="#{skillsDashboardView.onCloseSkillPanel}" />
+						<f:facet name="header">
+							<!-- <h:outputLabel value="#{SkillsMsg['skillsDashboard.skillPropertiesFor']}: " /> -->
+							<p:avatar style="vertical-align: top;bottom: 5px" size="large" shape="circle">
+								<p:graphicImage value="#{skillsDashboardView.getSelectedUserPhoto()}" stream="false" />
+							</p:avatar>
+							<h:outputLabel value=" #{skillsDashboardView.userSkillName}" />
+							<p:spacer width="15" />
+							<span style="font-size: medium"> 
+								<h:outputText value="(#{skillsDashboardView.getAvailabilityAsText(skillsDashboardView.selectedUser)})" />
+							</span>
+						</f:facet>
+						<h:panelGrid columns="2" width="100%" columnClasses="verticalAlign" styleClass="dashboard-my-skills">
+							<p:panel id="skillsPanel" >
+								<f:facet name="header">
+									<h:outputText style="margin-right: 0.3em;" class="fa fa-screwdriver-wrench" />
+									<h:outputText value="#{SkillsMsg['skillsDialog.skills']}" />
+								</f:facet>
+								<p:dataTable id="skillsTable" value="#{skillsDashboardView.userSkills}" var="userSkill" rowKey="#{userSkill.id}" widgetVar="skillsTableVar"
+									stripedRows="true">
+									<p:headerRow field="isSkillNotOwned()" expandable="true" expanded="true">
+										<p:column colspan="4">
+											<h:outputText class="fa fa-user" rendered="#{userSkill.isSkillNotOwned() == false}" />
+											<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.mySkills']}" rendered="#{userSkill.isSkillNotOwned() == false}" />
+											<h:outputText class="fa-solid fa-flag" value=" " rendered="#{userSkill.isSkillNotOwned() == true}" />
+											<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.targetSkills']}" rendered="#{userSkill.isSkillNotOwned() == true}" />
+										</p:column>
+									</p:headerRow>
+
+									<p:column headerText="#{SkillsMsg['Skills.skills_name']}" sortBy="#{userSkill.skill.name}" filterBy="#{userSkill.skill.nameWithParent}"
+										filterMatchMode="contains">
+										<h:outputText value="#{userSkill.skill.nameWithParent}" />
+									</p:column>
+
+									<p:column headerText="#{SkillsMsg['SkillsLevel.level']}" filterBy="#{userSkill.level}" filterMatchMode="exact" sortBy="#{userSkill.level.ordinal()}">
+										<f:facet name="filter">
+											<p:selectOneMenu onchange="PF('skillsTableVar').filter()" style="vertical-align: middle;">
+												<f:selectItem itemValue="" itemLabel="" />
+												<f:selectItems value="#{skillsUserDialog.skillsLevelSelection}" />
+											</p:selectOneMenu>
+										</f:facet>
+										<h:outputText value="#{userSkill.level.localeText}" />
+									</p:column>
+
+									<p:column headerText="#{SkillsMsg['SkillsStatus.status']} " filterBy="#{userSkill.status}" filterMatchMode="exact">
+										<f:facet name="filter">
+											<p:selectOneMenu onchange="PF('skillsTableVar').filter()" style="vertical-align: middle;">
+												<f:selectItem itemValue="" itemLabel="" />
+												<f:selectItems value="#{skillsUserDialog.skillsStatusSelection}" />
+											</p:selectOneMenu>
+										</f:facet>
+										<h:outputText value="#{userSkill.status.localeText}" />
+									</p:column>
+
+									<p:column headerText="#{SkillsMsg['Skills.Date']}" sortBy="#{userSkill.date}">
+										<h:outputText value="#{userSkill.date}" converter="dcem.LocalDateTimeConverter" />
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+							<h:panelGroup>
+								<p:panel id="skillsCertificates">
+									<f:facet name="header">
+										<h:outputText style="margin-right: 0.3em;" class="fa fa-solid fa-certificate" />
+										<h:outputText value="#{SkillsMsg['skillsDialog.certificates']}" />
+									</f:facet>
+									<p:dataTable id="certificateTable" value="#{skillsDashboardView.userCertificates}" var="certificate" widgetVar="certificateTableVar">
+										<p:headerRow field="isCertificateNotOwned()" expandable="true" expanded="true">
+											<p:column colspan="6">
+												<h:outputText class="fa fa-user" value=" " rendered="#{certificate.isCertificateNotOwned() == false}" />
+												<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.myCertificates']}" rendered="#{certificate.isCertificateNotOwned() == false}" />
+												<h:outputText class="fa-solid fa-flag" value=" " rendered="#{certificate.isCertificateNotOwned() == true}" />
+												<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.targetCertificates']}"
+													rendered="#{certificate.isCertificateNotOwned() == true}" />
+											</p:column>
+										</p:headerRow>
+
+										<p:column headerText="Name" sortBy="#{certificate.skillsCertificateEntity.name}" filterBy="#{certificate.skillsCertificateEntity.name}"
+											filterMatchMode="contains">
+											<h:outputText value="#{certificate.skillsCertificateEntity.name}" />
+										</p:column>
+										<p:column headerText="#{SkillsMsg['SkillsStatus.status']}" filterBy="#{certificate.status}" filterMatchMode="exact">
+											<f:facet name="filter">
+												<p:selectOneMenu onchange="PF('certificateTableVar').filter()" style="vertical-align: middle;">
+													<f:selectItem itemValue="" itemLabel="" />
+													<f:selectItems value="#{skillsUserDialog.skillsStatusSelection}" />
+												</p:selectOneMenu>
+											</f:facet>
+											<h:outputText value="#{certificate.status.localeText}" />
+										</p:column>
+
+										<p:column headerText="#{SkillsMsg['Skills.Date']}" sortBy="#{certificate.date}">
+											<h:outputText value="#{certificate.date}" converter="dcem.LocalDateTimeConverter" />
+										</p:column>
+
+										<p:column headerText="#{SkillsMsg['Skills.ExpirationDate']}" sortBy="#{certificate.expirationDate}">
+											<h:outputText value="#{certificate.expirationDate}" converter="dcem.LocalDateTimeConverter" />
+										</p:column>
+									</p:dataTable>
+								</p:panel>
+								<p:panel id="skillsProfile">
+									<f:facet name="header">
+										<h:outputText style="margin-right: 0.3em;" class="fa fa-toolbox" />
+										<h:outputText value="#{SkillsMsg['skillsJobProfileEntityView']}" />
+									</f:facet>
+									<p:dataTable id="jobProfileTable" value="#{skillsDashboardView.userJobProfiles}" var="userJobProfile" widgetVar="jobProfileTableVar">
+										<p:headerRow field="isProfileNotOwned()" expandable="true" expanded="true">
+											<p:column colspan="6">
+												<h:outputText class="fa fa-user" value=" " rendered="#{jobProfile.isProfileNotOwned() == false}" />
+												<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.myProfiles']}" rendered="#{jobProfile.isProfileNotOwned() == false}" />
+												<h:outputText class="fa-solid fa-flag" value=" " rendered="#{jobProfile.isProfileNotOwned() == true}" />
+												<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.myTargetProfiles']}" rendered="#{jobProfile.isProfileNotOwned() == true}" />
+											</p:column>
+										</p:headerRow>
+										<p:column headerText="#{SkillsMsg['Skills.skills_name']}" filterBy="#{userJobProfile.jobProfile.name}" filterMatchMode="contains"
+											sortBy="#{userJobProfile.jobProfile.name}">
+											<p:commandLink value="#{userJobProfile.jobProfile.name}" action="#{skillsDashboardView.actionImportJobProfile(userJobProfile)}">
+												<p:ajax event="dialogReturn" listener="#{skillsDashboardView.reload()}" update="dashboardform:skillsProperties" />
+											</p:commandLink>
+										</p:column>
+
+										<p:column headerText="#{SkillsMsg['Skills.Match']}">
+											<h:outputText value="#{userJobProfile.match} %" />
+										</p:column>
+
+										<p:column headerText="#{SkillsMsg['SkillsUserTarget.targetDate']}">
+											<h:outputText value="#{userJobProfile.date}" converter="dcem.LocalDateTimeConverter" />
+										</p:column>
+									</p:dataTable>
+								</p:panel>
+							</h:panelGroup>
+
+						</h:panelGrid>
+					</p:panel>
+				</h:panelGroup>
+
+			</h:form>
+		</h:body>
+	</f:view>
+</ui:composition>

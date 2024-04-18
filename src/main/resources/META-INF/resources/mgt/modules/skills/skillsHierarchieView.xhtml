@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:include src="/mgt/modules/dialogHead.xhtml" />
+
+<style>
+.ui-organigram .ui-organigram-icon-container {
+	height: 0.5em !important;
+}
+
+.ui-organigram .ui-organigram-node.skills {
+	font-size: large;
+	background: #0068B0;
+	background: -moz-linear-gradient(top, #0080E8 0%, #005078 100%);
+	background: -webkit-linear-gradient(top, #0080E8 0%, #005078 100%);
+	background: linear-gradient(to bottom, #0080E8 0%, #005078 100%);
+}
+
+.ui-organigram .ui-organigram-node.root {
+	font-size: large;
+	background: #0068B0;
+	background: -moz-linear-gradient(top, #00A0E8 0%, #005078 100%);
+	background: -webkit-linear-gradient(top, #00A0E8 0%, #005078 100%);
+	background: linear-gradient(to bottom, #00A0E8 0%, #005078 100%);
+}
+
+.ui-organigram .ui-organigram-node.notApprovedSkills {
+	font-size: large;
+	background: -moz-linear-gradient(top, #b0b0b0 0%, #466478 100%);
+	background: -webkit-linear-gradient(top, #b0b0b0 0%, #466478 100%);
+	background: linear-gradient(to bottom, #b0b0b0 0%, #466478 100%);
+}
+
+.ui-organigram-node.selected {
+	box-shadow: inset 0 0 30px -5px rgb(255, 255, 0) !important;
+}
+
+.ui-organigram .line.down {
+	border-color: LightGrey !Important;
+	background-color: LightGrey !Important;
+}
+
+.ui-organigram .line {
+	border-color: LightGrey !Important;
+}
+</style>
+	<f:view locale="#{operatorSession.locale}">
+		<h:form id="organigramForm">
+			<c:forEach items="#{viewNavigator.viewActions}" var="autoAction">
+				<p:commandLink rendered="#{autoAction.link}" ajax="#{autoAction.rawAction.ajax}" action="#{viewNavigator.setActiveDialog(autoAction)}">
+					<i class="#{viewNavigator.getActionIcon(autoAction)}" />
+					<p:outputLabel value=" #{autoAction.actionText}" style="font-weight: bold" />
+				</p:commandLink>
+
+				<p:commandButton value="#{autoAction.actionText}" rendered="#{autoAction.link == false}" action="#{viewNavigator.setActiveDialog(autoAction)}"
+					icon="#{viewNavigator.getActionIcon(autoAction)}" ajax="#{autoAction.rawAction.ajax}">
+					<p:ajax event="dialogReturn" listener="#{skillsHierarchieView.reload()}" update="@form" />
+				</p:commandButton>
+				<p:spacer width="12" />
+			</c:forEach>
+			<p:spacer width="20" />
+			<h:outputText value="#{SkillsMsg['onlyMySkills']} " />
+			<p:toggleSwitch value="#{skillsHierarchieView.onlyMySkills}" style="vertical-align: middle;">
+				<p:ajax event="change" listener="#{skillsHierarchieView.reload()}" update="organigram" />
+			</p:toggleSwitch>
+			<hr style="color: LightGrey"></hr>
+			<h:outputText value="#{skillsHierarchieView.cannotLoadHierachy}" rendered="#{empty skillsHierarchieView.rootNode}" />
+			<p></p>
+
+			<p:organigram id="organigram" style="height: 100%" widgetVar="organigram" value="#{skillsHierarchieView.rootNode}" var="node" zoom="true"
+				autoScrollToSelection="true" selection="#{skillsHierarchieView.selectionNode}">
+				<p:ajax event="select" process="@this" />
+				<p:ajax event="contextmenu" process="@this" />
+				<p:ajax event="dragdrop" process="@this" update="@form" listener="#{skillsHierarchieView.nodeDragDropListener}" />
+
+				<p:organigramNode type="root" skipLeafHandling="false">
+					<h:outputText value="#{node.data}" />
+				</p:organigramNode>
+
+				<p:organigramNode type="skills" skipLeafHandling="true">
+					<h:outputText value="#{node.data}" />
+					<h:panelGroup rendered="#{skillsHierarchieView.getRanking(node.data) ne null}">
+						<br />
+						<h:outputLabel value="#{skillsHierarchieView.getRanking(node.data)}" styleClass="#{skillsHierarchieView.getRankingClass(node.data)}" />
+						<h:panelGroup rendered="#{skillsHierarchieView.getStatus(node.data) > 0}">
+							<h:outputText style="color: lightyellow; font-size: small" class="fa-solid fa-flag" />
+							<h:outputText style="color: lightyellow; font-size: small" value=" #{skillsHierarchieView.getTargetDate(node.data)}" />
+						</h:panelGroup>
+					</h:panelGroup>
+				</p:organigramNode>
+
+				<p:organigramNode type="notApprovedSkills" skipLeafHandling="true">
+					<h:outputText value="#{node.data}" style="display:block" />
+					<h:outputText style="font-size:x-small;" value="(Skill not Approved)" />
+					<h:panelGroup rendered="#{skillsHierarchieView.getRanking(node.data) ne null}">
+						<br />
+						<h:outputLabel value="#{skillsHierarchieView.getRanking(node.data)}" styleClass="#{skillsHierarchieView.getRankingClass(node.data)}" />
+						<h:panelGroup rendered="#{skillsHierarchieView.getStatus(node.data) > 0}">
+							<h:outputText style="color: lightyellow; font-size: small" class="fa-solid fa-flag" />
+							<h:outputText style="color: lightyellow; font-size: small" value=" #{skillsHierarchieView.getTargetDate(node.data)}" />
+						</h:panelGroup>
+					</h:panelGroup>
+				</p:organigramNode>
+			</p:organigram>
+
+			<p:contextMenu for="organigram" nodeType="skills">
+				<p:menuitem value="#{CoreMsg['AUTO_ACTION.add']}" ajax="true" update="@form" icon="fa fa-plus" rendered="#{skillsHierarchieView.isAddSkill()}"
+					action="#{skillsHierarchieView.addSkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{CoreMsg['AUTO_ACTION.edit']}" ajax="true" icon="fa fa-pencil" rendered="#{skillsHierarchieView.isEditSkill()}" update="organigram"
+					action="#{skillsHierarchieView.editSkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{CoreMsg['AUTO_ACTION.delete']}" ajax="true" update="@form" icon="pi pi-times" rendered="#{skillsHierarchieView.isDeleteSkill()}"
+					action="#{skillsHierarchieView.deleteSkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{SkillsMsg['AUTO_ACTION.hierarchySearchUserWithSkill']}" ajax="true" update="@form" icon="fa fa-solid fa-magnifying-glass"
+					rendered="#{skillsHierarchieView.isSearchSkill()}" action="#{skillsHierarchieView.actionSearchUserWithSkillsInDashboard()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{SkillsMsg['AUTO_ACTION.editMySkills']}" ajax="true" update="@form" icon="fa fa-screwdriver-wrench"
+					 rendered="#{skillsHierarchieView.isEditMySkill()}" action="#{skillsHierarchieView.mySkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+			</p:contextMenu>
+
+			<p:contextMenu for="organigram" nodeType="notApprovedSkills">
+				<p:menuitem value="#{SkillsMsg['AUTO_ACTION.approveSkill']}" ajax="true" update="@form" icon="fa fa-plus" rendered="#{skillsHierarchieView.isApproveSkill()}"
+					action="#{skillsHierarchieView.actionApproveSkills()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{CoreMsg['AUTO_ACTION.edit']}" ajax="true" icon="fa fa-pencil" rendered="#{skillsHierarchieView.isEditSkill()}" update="organigram"
+					action="#{skillsHierarchieView.editSkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{CoreMsg['AUTO_ACTION.delete']}" ajax="true" update="@form" icon="pi pi-times" rendered="#{skillsHierarchieView.isDeleteSkill()}"
+					action="#{skillsHierarchieView.deleteSkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{SkillsMsg['AUTO_ACTION.hierarchySearchUserWithSkill']}" ajax="true" update="@form" icon="fa fa-solid fa-magnifying-glass"
+					rendered="#{skillsHierarchieView.isSearchSkill()}" action="#{skillsHierarchieView.actionSearchUserWithSkillsInDashboard()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+				<p:menuitem value="#{SkillsMsg['AUTO_ACTION.editMySkills']}" ajax="true" update="@form" icon="fa fa-screwdriver-wrench"
+					rendered="#{skillsHierarchieView.isEditMySkill()}"  action="#{skillsHierarchieView.mySkill()}">
+					<p:ajax event="dialogReturn" update="@form" listener="#{skillsHierarchieView.reload()}" />
+				</p:menuitem>
+			</p:contextMenu>
+		</h:form>
+		
+	</f:view>
+</ui:composition>

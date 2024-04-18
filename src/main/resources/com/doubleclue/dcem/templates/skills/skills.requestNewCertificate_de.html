@@ -1,0 +1,38 @@
+<html>
+
+<body>
+	<div>
+		Hallo,
+		<p></p><br>
+		${Requester} hat ein neues Zertifikat angelegt:
+		<p></p><br>
+			Name: ${Name}
+		<p></p>
+		<div style="width: 30em;">
+			Beschreibung: ${(Description)!"-"}
+		</div>
+		<p></p>
+		<div style="width: 30em;">
+			Aussteller: ${(Issuer)!"Nicht gefunden. Bitte kontaktieren Sie ${Name}, um den Aussteller angelegen."}
+		</div>
+		Gehört zu Skills
+		<#list appliedForSkills as skill>
+			<tr>
+				<td>${(skill.getNameWithParent())!"-"}</td>
+			</tr>
+		</#list>
+
+		<p></p><br>
+		Das neue Zertifikat wurde in der DoubleClue Skills angelegt und wartet derzeit auf Bestätigung. Es kann jedoch bereits von Benutzern zu ihrem Profil hinfzugefügt werden.
+		Bitte besuchen Sie die Zertifikatansicht in DoubleClue Skills, um das neue Zertifikat zu bestätigen oder zu editieren.
+		
+		<p></p><br>
+		Mit freundlichen Grüßen, <br>
+		Ihr DoubleClue Skills Team
+		<p></p><br>
+
+	</div>
+
+</body>
+
+</html>

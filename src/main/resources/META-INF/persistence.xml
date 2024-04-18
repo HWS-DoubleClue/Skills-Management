@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="dcem.skills">
+		<class>com.doubleclue.dcem.skills.entities.SkillsEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsUserEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsLevelEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsUserSkillEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsIssuerEntity</class>
+		<class>com.doubleclue.dcem.as.entities.CloudSafeEntity</class>
+		<class>com.doubleclue.dcem.as.entities.DeviceEntity</class>
+		<class>com.doubleclue.dcem.as.entities.CloudSafeContentEntity</class>
+		<class>com.doubleclue.dcem.as.entities.AsVersionEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsCertificateEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsUserCertificateEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsJobProfileEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsUserJobProfileEntity</class>
+		<class>com.doubleclue.dcem.skills.entities.SkillsCertificatePriorityEntity</class>
+		<!-- NOT needed any more <class>com.doubleclue.dcem.core.entities.DcemRole</class> 
+			<class>com.doubleclue.dcem.core.entities.DomainEntity</class> <class>com.doubleclue.dcem.core.entities.DcemAction</class> 
+			<class>com.doubleclue.dcem.core.entities.DcemUser</class> <class>com.doubleclue.dcem.core.entities.DcemUserExtension</class> 
+			<class>com.doubleclue.dcem.core.entities.DcemGroup</class> <class>com.doubleclue.dcem.core.entities.DepartmentEntity</class> -->
+		<properties>
+			<property name="hibernate.show_sql" value="true" />
+		</properties>
+	</persistence-unit>
+</persistence>

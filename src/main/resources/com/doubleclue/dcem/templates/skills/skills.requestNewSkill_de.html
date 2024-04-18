@@ -1,0 +1,34 @@
+<html>
+
+<body>
+	<div>
+		Hallo,
+		<p></p><br>
+		${Requester} hat einen neuen Skill angelegt:
+		<p></p><br>
+		Skill: ${Skill}
+		<p></p>
+		Übergeordneter Skill: ${(Parent)!"Keiner"}
+		<p></p>
+		<div style="width: 30em;">
+			Beschreibung: ${(Description)!"-"}
+		</div>
+		<p></p>
+		<div style="width: 30em;">
+			Kommentar: ${(Comment)!"-"}
+		</div>
+
+		<p></p><br>
+		Der neue Skill wurde in der DoubleClue Skill Hierarchy angelegt und wartet derzeit auf Bestätigung. Er kann jedoch bereits von Benutzern zu ihrem Skillprofil hinfzugefügt werden.
+		Bitte besuchen Sie die Skill-View in DoubleClue Skills um den neuen Skill zu bestätigen oder zu editieren.
+		
+		<p></p><br>
+		Mit freundlichen Grüßen, <br>
+		Ihr DoubleClue Skills Team
+		<p></p><br>
+
+	</div>
+
+</body>
+
+</html>

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:include src="/mgt/modules/dialogHead.xhtml" />
+
+<f:view locale="#{operatorSession.locale}">
+
+	<h:body class="dialogBody" style="padding-bottom: 2em;">
+		<span id="customheader"> <h:outputLabel class="#{autoView.icon} dialogTitle" /> <h:outputLabel value="#{viewNavigator.dialogTitle}"
+				styleClass="dialogTitle" />
+		</span>
+		<p:messages showSummary="true" showDetail="false" closeable="true">
+			<p:autoUpdate />
+		</p:messages>
+
+		<h:form id="form">
+			<h:panelGrid columns="2" cellpadding="4" id="skillsUser">
+				<p:outputLabel for="@next" value="#{SkillsMsg['skillsUserView']} " rendered="#{skillsUserDialog.addUser == true}" />
+				<p:autoComplete id="skillsUserNameSearch" minQueryLength="1" value="#{skillsUserDialog.userLoginId}" completeMethod="#{skillsUserDialog.completeUser}"
+					effect="fade" size="20" required="true" forceSelection="true" dropdown="true" rendered="#{skillsUserDialog.addUser == true}" />
+				<p:outputLabel for="@next" value="#{SkillsMsg['skillsUserView']}:" rendered="#{skillsUserDialog.addUser == false}" />
+				<h:outputText id="skillsUserNameDisplay" value="#{skillsUserDialog.skillsUserEntity.dcemUser.displayName}" rendered="#{skillsUserDialog.addUser == false}" />
+			</h:panelGrid>
+
+			<p:tabView id="tabs">
+				<p:tab id="currentSkills">
+					<f:facet name="title">
+						<h:outputText style="margin-right: 0.3em;" class="fa fa-screwdriver-wrench" />
+						<h:outputText value="#{SkillsMsg['skillsDialog.skills']}" />
+					</f:facet>
+					<h:panelGroup>
+						<p:commandLink update="skillsDialogForm:skillsDialog" action="#{skillsUserDialog.actionPrepareAddSkill}" immediate="true"
+							oncomplete="PF('skillsDialogVar').show();">
+							<h:outputText class="fa fa-plus" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.add']}" />
+						</p:commandLink>
+
+						<p:spacer width="30" />
+						<p:commandLink id="editSkill" action="#{skillsUserDialog.actionPrepareEditSkill}" immediate="true" update="skillsDialogForm:skillsDialog">
+							<h:outputText class="fa fa-edit" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.edit']}" />
+						</p:commandLink>
+
+						<p:spacer width="30" />
+						<p:commandLink id="removeSkill" action="#{skillsUserDialog.actionRemoveSkill}" immediate="true" update="skillsTable jobProfileTable">
+							<h:outputText class="fa fa-trash-can" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.delete']}" />
+							<p:confirm icon="pi pi-exclamation-triangle" message="#{SkillsMsg['skillsUserDialog.removeSkillConfirmation']}" />
+						</p:commandLink>
+
+						<p />
+						<p:dataTable id="skillsTable" var="userSkill" widgetVar="skillsTableVar" value="#{skillsUserDialog.userSkills}" styleClass="memberTable" scrollable="true"
+							rowKey="#{userSkill.skill.id}_#{userSkill.level.ordinal()}" scrollHeight="280" emptyMessage="#{CoreMsg['emptyTable']}" selectionMode="multiple"
+							selection="#{skillsUserDialog.selectedUserSkills}">
+							<p:headerRow field="isSkillNotOwned()" expandable="true" expanded="true">
+								<p:column colspan="4">
+									<h:outputText class="fa fa-user" rendered="#{userSkill.isSkillNotOwned() == false}" />
+									<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.mySkills']}" rendered="#{userSkill.isSkillNotOwned() == false}" />
+									<h:outputText class="fa-solid fa-flag" value=" " rendered="#{userSkill.isSkillNotOwned() == true}" />
+									<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.targetSkills']}" rendered="#{userSkill.isSkillNotOwned() == true}" />
+								</p:column>
+							</p:headerRow>
+
+
+							<p:column headerText="#{SkillsMsg['Skills.skills_name']}" sortBy="#{userSkill.skill.name}" filterBy="#{userSkill.skill.nameWithParent}"
+								filterMatchMode="contains">
+								<h:outputText value="#{userSkill.skill.nameWithParent}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['SkillsLevel.level']}" filterBy="#{userSkill.level}" filterMatchMode="exact">
+								<f:facet name="filter">
+									<p:selectOneMenu onchange="PF('skillsTableVar').filter()" style="vertical-align: middle;">
+										<f:selectItem itemValue="" itemLabel="" />
+										<f:selectItems value="#{skillsUserDialog.skillsLevelSelection}" />
+									</p:selectOneMenu>
+								</f:facet>
+								<h:outputText value="#{userSkill.level.localeText}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['SkillsStatus.status']}" filterBy="#{userSkill.status}" filterMatchMode="exact">
+								<f:facet name="filter">
+									<p:selectOneMenu onchange="PF('skillsTableVar').filter()" style="vertical-align: middle;">
+										<f:selectItem itemValue="" itemLabel="" />
+										<f:selectItems value="#{skillsUserDialog.skillsStatusSelection}" />
+									</p:selectOneMenu>
+								</f:facet>
+								<h:outputText value="#{userSkill.status.localeText}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['Skills.Date']}" sortBy="#{userSkill.date}">
+								<h:outputText value="#{userSkill.date}" converter="dcem.LocalDateTimeConverter" />
+							</p:column>
+						</p:dataTable>
+					</h:panelGroup>
+				</p:tab>
+
+				<p:tab id="currentCertificates">
+					<f:facet name="title">
+						<h:outputText style="margin-right: 0.3em;" class="fa fa-solid fa-certificate" />
+						<h:outputText value="#{SkillsMsg['skillsDialog.certificates']}" />
+					</f:facet>
+
+					<h:panelGroup>
+						<p:commandLink id="addCertificate" update="certificateDialogForm:certificateDialog" action="#{skillsUserDialog.actionPrepareAddCertificate}"
+							immediate="true" oncomplete="PF('certificateDialogVar').show();">
+							<h:outputText class="fa fa-plus" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.add']}" />
+						</p:commandLink>
+
+						<p:spacer width="30" />
+						<p:commandLink id="editCertificate" action="#{skillsUserDialog.actionPrepareEditCertificate}" immediate="true"
+							update="certificateDialogForm:certificateDialog">
+							<h:outputText class="fa fa-edit" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.edit']}" />
+						</p:commandLink>
+
+						<p:spacer width="30" />
+						<p:commandLink id="deleteCertificate" action="#{skillsUserDialog.actionRemoveCertificate}" immediate="true" update="certificateTable jobProfileTable">
+							<h:outputText class="fa fa-trash-can" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.delete']}" />
+							<p:confirm icon="pi pi-exclamation-triangle" message="#{SkillsMsg['skillsUserDialog.removeCertificateConfirmation']}" />
+						</p:commandLink>
+						<p />
+
+						<p:dataTable id="certificateTable" widgetVar="certificateTableVar" value="#{skillsUserDialog.userCertificates}" var="userCertificate"
+							styleClass="memberTable" scrollable="true" scrollHeight="280" emptyMessage="#{CoreMsg['emptyTable']}" selectionMode="multiple"
+							selection="#{skillsUserDialog.selectedUserCertificates}" rowKey="#{userCertificate.skillsCertificateEntity.name}">
+							<p:headerRow field="isCertificateNotOwned()" expandable="true" expanded="true">
+								<p:column colspan="6">
+									<h:outputText class="fa fa-user" value=" " rendered="#{userCertificate.isCertificateNotOwned() == false}" />
+									<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsUserDialog.currentCertificates']}"
+										rendered="#{userCertificate.isCertificateNotOwned() == false}" />
+									<h:outputText class="fa-solid fa-flag" value=" " rendered="#{userCertificate.isCertificateNotOwned() == true}" />
+									<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.targetCertificates']}"
+										rendered="#{userCertificate.isCertificateNotOwned() == true}" />
+								</p:column>
+							</p:headerRow>
+
+							<p:column headerText="#{SkillsMsg['Skills.skills_name']}" sortBy="#{userCertificate.skillsCertificateEntity.name}"
+								filterBy="#{userCertificate.skillsCertificateEntity.name}" filterMatchMode="contains">
+								<h:outputText value="#{userCertificate.skillsCertificateEntity.name}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['SkillsStatus.status']}" filterBy="#{userCertificate.status}" filterMatchMode="exact">
+								<f:facet name="filter">
+									<p:selectOneMenu onchange="PF('certificateTableVar').filter()" style="vertical-align: middle;">
+										<f:selectItem itemValue="" itemLabel="" />
+										<f:selectItems value="#{skillsUserDialog.skillsStatusSelection}" />
+									</p:selectOneMenu>
+								</f:facet>
+								<h:outputText value="#{userCertificate.status.localeText}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['Skills.Date']}" sortBy="#{userCertificate.date}">
+								<h:outputText value="#{userCertificate.date}" converter="dcem.LocalDateTimeConverter" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['Skills.ExpirationDate']}" sortBy="#{userCertificate.expirationDate}">
+								<h:outputText value="#{userCertificate.expirationDate}" converter="dcem.LocalDateTimeConverter" />
+							</p:column>
+						</p:dataTable>
+					</h:panelGroup>
+				</p:tab>
+
+				<p:tab id="currentJobProfiles" rendered="#{skillsUserDialog.adminEditing}">
+					<f:facet name="title">
+						<h:outputText style="margin-right: 0.3em;" class="fa fa-toolbox" />
+						<h:outputText value="#{SkillsMsg['skillsJobProfileEntityView']}" />
+					</f:facet>
+
+					<h:panelGroup>
+						<p:commandLink id="addJobProfile" update="jobProfileDialogForm:jobProfileDialog" action="#{skillsUserDialog.actionPrepareAddJobProfile}" immediate="true"
+							oncomplete="PF('jobProfileDialogVar').show();">
+							<h:outputText class="fa fa-plus" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.add']}" />
+						</p:commandLink>
+
+
+						<p:spacer width="30" />
+						<p:commandLink id="editJobProfile" action="#{skillsUserDialog.actionPrepareEditJobProfile}" immediate="true"
+							update="jobProfileDialogForm:jobProfileDialog">
+							<h:outputText class="fa fa-edit" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.edit']}" />
+						</p:commandLink>
+
+						<p:spacer width="30" />
+						<p:commandLink id="deleteJobProfile" action="#{skillsUserDialog.actionRemoveJobProfile}" immediate="true" update="jobProfileTable">
+							<h:outputText class="fa fa-trash-can" />
+							<p:outputLabel value=" #{SkillsMsg['AUTO_ACTION.delete']}" />
+							<p:confirm icon="pi pi-exclamation-triangle" message="#{SkillsMsg['skillsUserDialog.removeJobProfileConfirmation']}" />
+						</p:commandLink>
+						<p />
+
+						<p:dataTable id="jobProfileTable" value="#{skillsUserDialog.userJobProfiles}" var="userJobProfile" widgetVar="jobProfileTableVar" styleClass="memberTable"
+							scrollable="true" scrollHeight="280" emptyMessage="#{CoreMsg['emptyTable']}" selectionMode="multiple"
+							selection="#{skillsUserDialog.selectedUserJobProfiles}" rowKey="#{userJobProfile.jobProfile.name}">
+							<p:headerRow field="isProfileNotOwned()" expandable="true" expanded="true">
+								<p:column colspan="6">
+									<h:outputText class="fa fa-user" value=" " rendered="#{jobProfile.isProfileNotOwned() == false}" />
+									<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.myProfiles']}" rendered="#{jobProfile.isProfileNotOwned() == false}" />
+									<h:outputText class="fa-solid fa-flag" value=" " rendered="#{jobProfile.isProfileNotOwned() == true}" />
+									<h:outputText styleClass="ml-2" value=" #{SkillsMsg['skillsDashboard.myTargetProfiles']}" rendered="#{jobProfile.isProfileNotOwned() == true}" />
+								</p:column>
+							</p:headerRow>
+
+							<p:column headerText="#{SkillsMsg['Skills.skills_name']}" filterBy="#{userJobProfile.jobProfile.name}" filterMatchMode="contains"
+								sortBy="#{userJobProfile.jobProfile.name}">
+								<h:outputText value="#{userJobProfile.jobProfile.name}" />
+							</p:column>
+
+
+							<p:column filterBy="#{userJobProfile.match}" filterMatchMode="gte" converter="javax.faces.Integer">
+								<f:facet name="header">
+									<h:outputText value="#{SkillsMsg['Skills.Match']}" />
+								</f:facet>
+
+								<h:outputText value="#{userJobProfile.match} %" />
+							</p:column>
+
+
+							<p:column headerText="#{SkillsMsg['Skills.Date']}" sortBy="#{userJobProfile.date}">
+								<h:outputText value="#{userJobProfile.date}" converter="dcem.LocalDateTimeConverter" />
+							</p:column>
+
+						</p:dataTable>
+					</h:panelGroup>
+				</p:tab>
+
+				<p:tab id="userProperties" rendered="#{skillsUserDialog.adminEditing}">
+					<f:facet name="title">
+						<h:outputText style="margin-right: 0.3em;" class="fa fa-cog" />
+						<h:outputText value="#{SkillsMsg['skillsUserDialog.properties']}" />
+					</f:facet>
+
+					<h:panelGrid columns="3" cellpadding="3" cellspacing="3" id="propertiesGrid">
+
+						<p:outputLabel for="@next" value="#{SkillsMsg['skillsUserDialog.reportsTo']} " />
+						<p:autoComplete id="reportsToDcemUser" minQueryLength="1" value="#{skillsUserDialog.reportsToUserLoginId}"
+							completeMethod="#{skillsUserDialog.completeUser}" effect="fade" size="20" forceSelection="true" dropdown="true" 
+							emptyMessage="#{SkillsMsg['error.noItemsFound']}">
+						</p:autoComplete>
+
+						<p />
+
+						<p:outputLabel for="@next" value="#{SkillsMsg['Skills.availability']} " />
+						<p:selectOneMenu value="#{skillsUserDialog.skillsUserEntity.availability}" id="availability" style="min-width: 10em !important" required="true">
+							<f:selectItems value="#{skillsUserDialog.skillsAvailabilitySelection}" />
+							<p:ajax event="change" update="form:tabs:available-from-extended" />
+						</p:selectOneMenu>
+						<h:panelGrid columns="2" cellpadding="0" cellspacing="0" id="available-from-extended">
+							<p:outputLabel for="@next" value="#{SkillsMsg['Skills.availability']}: " style="display:none" rendered="#{skillsUserDialog.isAvailableFrom()}" />
+							<p:datePicker id="availableFromDate" value="#{skillsUserDialog.skillsUserEntity.availableFrom}" showIcon="true" showButtonBar="true" yearNavigator="true"
+								locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}" rendered="#{skillsUserDialog.isAvailableFrom()}" required="true">
+							</p:datePicker>
+						</h:panelGrid>
+					</h:panelGrid>
+					<p />
+					<p:outputLabel for="userDescription" value="#{SkillsMsg['Skills.description']} " />
+					<p:textEditor id="userDescription" value="#{skillsUserDialog.skillsUserEntity.description}" height="250" />
+				</p:tab>
+			</p:tabView>
+
+			<p />
+			<div style="margin-bottom: 3em">
+				<p:commandButton value="#{SkillsMsg['skillsDialog.save']}" style="margin:0.5rem 1rem; width:8em" icon="fa fa-save" ajax="true"
+					action="#{autoDialog.actionOk}" />
+				<p:commandButton id="closeDialog" value="#{CoreMsg['cancel']}" icon="fa fa-close" style="width: 8em" immediate="true"
+					action="#{viewNavigator.actionCloseDialog}" />
+			</div>
+			<p:spacer height="2em" />
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<f:facet name="header">
+					<h:outputLabel class="fa fa-trash-can dialogTitle" />
+					<p:spacer width="3" />
+					<h:outputLabel value="#{SkillsMsg['skillsUserDialog.confirmDeletion']}" styleClass="dialogTitle" />
+				</f:facet>
+				<p:commandButton value="#{DcupMsg['button.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+				<p:spacer width="12" />
+				<p:commandButton value="#{DcupMsg['button.no']}" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-close" />
+			</p:confirmDialog>
+
+		</h:form>
+
+		<h:form id="skillsDialogForm">
+			<p:dialog widgetVar="skillsDialogVar" modal="true" id="skillsDialog">
+				<f:facet name="header">
+					<h:outputText style="margin-right: 0.3em;" class="fa fa-plus" rendered="#{skillsUserDialog.editObject == false}" />
+					<h:outputText value="#{SkillsMsg['skillsDialog.add']}" rendered="#{skillsUserDialog.editObject == false}" />
+					<h:outputText style="margin-right: 0.3em;" class="fa fa-pen" rendered="#{skillsUserDialog.editObject == true}" />
+					<h:outputText value="#{SkillsMsg['skillsDialog.edit']}" rendered="#{skillsUserDialog.editObject == true}" />
+				</f:facet>
+				<p:messages id="skillsDialogMsg" layout="table" globalOnly="false" showSummary="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
+				<h:panelGroup id="skillPanel">
+					<h:panelGrid columns="2" cellpadding="4" cellspacing="4">
+						<p:outputLabel for="skillSearch" value="#{SkillsMsg['Skills']} " rendered="#{skillsUserDialog.editObject == false}" />
+						<p:autoComplete id="skillSearch" required="true" forceSelection="true" dropdown="true" value="#{skillsUserDialog.skillNameWithParent}"
+							completeMethod="#{skillsUserDialog.actionCompleteSkillWithParent}" effect="fade" size="30" queryDelay="500"
+							rendered="#{skillsUserDialog.editObject == false}" emptyMessage="#{SkillsMsg['error.noItemsFound']}" />
+						<p:outputLabel for="skillname" value="#{SkillsMsg['Skills']} " rendered="#{skillsUserDialog.editObject == true}" />
+						<h:outputText id="skillname" value="#{skillsUserDialog.skillNameWithParent}" rendered="#{skillsUserDialog.editObject == true}" />
+						<p:outputLabel for="skillLevel" value="#{SkillsMsg['SkillsLevel.level']} " />
+						<p:selectOneMenu value="#{skillsUserDialog.skillsUserSkillEntity.level}" id="skillLevel" style="min-width: 10em !important" required="true">
+							<f:selectItems value="#{skillsUserDialog.skillsLevelSelection}" />
+						</p:selectOneMenu>
+						<p:outputLabel for="skillStatus" value="#{SkillsMsg['SkillsStatus.status']} " />
+						<p:selectOneMenu value="#{skillsUserDialog.skillsUserSkillEntity.status}" id="skillStatus" style="min-width: 10em !important" required="true">
+							<f:selectItems value="#{skillsUserDialog.skillsStatusSelection}" />
+						</p:selectOneMenu>
+						<p:outputLabel for="skillsDate" value="#{SkillsMsg['Skills.Date']} " />
+						<p:datePicker id="skillsDate" value="#{skillsUserDialog.skillsUserSkillEntity.date}" showIcon="true" showButtonBar="true" yearNavigator="true"
+							locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}">
+						</p:datePicker>
+
+					</h:panelGrid>
+				</h:panelGroup>
+				<p />
+				<br />
+				<p:commandButton id="actionSaveSkill" value="#{CoreMsg['ok']}" ajax="true" icon="pi pi-check" action="#{skillsUserDialog.actionAddOrUpdateSkill}"
+					update="form:tabs:skillsTable form:tabs:jobProfileTable" style="margin:0.5rem 1rem; width:8em" />
+				<p:commandButton id="closeDialog2" value="#{CoreMsg['close']}" icon="fa fa-close" immediate="true" onclick="PF('skillsDialogVar').hide();" update="form"
+					style="width: 8em" />
+				<p />
+				<br />
+			</p:dialog>
+		</h:form>
+
+		<h:form id="certificateDialogForm">
+			<p:dialog widgetVar="certificateDialogVar" modal="true" id="certificateDialog" style="min-width: 65em;max-width: 65em;min-height: 40em;max-height: 40em;">
+				<f:facet name="header">
+					<h:outputText style="margin-right: 0.3em;" class="fa fa-plus" rendered="#{skillsUserDialog.editObject == false}" />
+					<h:outputText value="#{SkillsMsg['skillsDialog.addCertificate']}" rendered="#{skillsUserDialog.editObject == false}" />
+					<h:outputText style="margin-right: 0.3em;" class="fa fa-pen" rendered="#{skillsUserDialog.editObject == true}" />
+					<h:outputText value="#{SkillsMsg['skillsDialog.certificates']}" rendered="#{skillsUserDialog.editObject == true}" />
+				</f:facet>
+				<p:messages id="certificatesDialogMsg" layout="table" globalOnly="false" showSummary="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
+				<p:tabView id="tabView">
+					<p:tab title="#{SkillsMsg['skillsDialog.general']}">
+						<h:panelGrid columns="2" cellpadding="4" cellspacing="4">
+
+							<p:outputLabel for="certificateSearch" value="#{SkillsMsg['Skills.skills_name']}" rendered="#{skillsUserDialog.editObject == false}" />
+							<p:autoComplete completeMethod="#{skillsUserDialog.actionCompleteCertificate}" id="certificateSearch" value="#{skillsUserDialog.certificateName}"
+								required="true" dropdown="true" scrollHeight="250" size="58" forceSelection="true" emptyMessage="#{SkillsMsg['error.noItemsFound']}" queryDelay="500" rendered="#{skillsUserDialog.editObject == false}" />
+
+							<p:outputLabel for="certificateName" value="#{SkillsMsg['Skills.skills_name']}" rendered="#{skillsUserDialog.editObject == true}" />
+							<h:outputText id="certificateName" value="#{skillsUserDialog.certificateName}" rendered="#{skillsUserDialog.editObject == true}" />
+
+							<p:outputLabel for="certificateStatus" value="#{SkillsMsg['SkillsStatus.status']} " />
+							<p:selectOneMenu value="#{skillsUserDialog.skillsUserCertificateEntity.status}" id="certificateStatus" style="min-width: 13em !important" required="true">
+								<f:selectItems value="#{skillsUserDialog.skillsStatusSelection}" />
+							</p:selectOneMenu>
+
+							<p:outputLabel for="certificateDate" value="#{SkillsMsg['Skills.Date']}" />
+							<p:datePicker id="certificateDate" value="#{skillsUserDialog.skillsUserCertificateEntity.date}" showIcon="true" showButtonBar="true" yearNavigator="true"
+								locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}">
+							</p:datePicker>
+
+							<p:outputLabel for="certificateExpirationDate" value="#{SkillsMsg['Skills.ExpirationDate']}" />
+							<p:datePicker id="certificateExpirationDate" value="#{skillsUserDialog.skillsUserCertificateEntity.expirationDate}" showIcon="true" showButtonBar="true"
+								yearNavigator="true" locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}">
+							</p:datePicker>
+
+							<p:outputLabel for="certificateComment" value="#{SkillsMsg['skillsDialog.comment']}" />
+							<p:inputTextarea id="certificateComment" value="#{skillsUserDialog.skillsUserCertificateEntity.comment}" rows="4" cols="60" autoResize="false" />
+						</h:panelGrid>
+					</p:tab>
+					<p:tab id="filesTab" title="#{SkillsMsg['skillsDialog.files']}">
+						<h:panelGroup id="download">
+							<p:fileUpload id="upload-button" listener="#{skillsUserDialog.handleFileUpload}" mode="advanced" dragDropSupport="false" multiple="false"
+								sizeLimit="50000000" fileLimit="8" allowTypes="/(\.|\/)(jpe?g|png|pdf)$/" update="fileTable" auto="true"
+								invalidSizeMessage="#{SkillsMsg['skillsUserDialog.invalidSize']}" label="#{SkillsMsg['skillsDialog.upload']}" />
+							<p:tooltip for="upload-button" value="#{SkillsMsg['skillsUserDialog.uploadFormat']}" position="top" />
+							<p:commandButton id="actionDownloadSingleFile" icon="fa fa-cloud-download" value="#{DcupMsg['button.download']}"
+								rendered="#{skillsUserDialog.multipleFiles == false}" actionListener="#{skillsUserDialog.actionDownloadSingleFile}" immediate="true">
+								<p:fileDownload value="#{skillsUserDialog.downloadFile}" />
+							</p:commandButton>
+							<p:commandButton id="actionDownloadMultiFile" icon="fa fa-cloud-download" value="#{DcupMsg['button.download']}" ajax="false" immediate="true"
+								action="#{skillsUserDialog.actionDownloadMultipleFilesOrFolders()}" rendered="#{skillsUserDialog.multipleFiles == true}">
+							</p:commandButton>
+							<p:spacer width="20" />
+							<p:commandButton id="removeFile" icon="fa fa-trash-can" ajax="true" value="#{DcupMsg['button.delete']}" action="#{skillsUserDialog.removeFile()}"
+								update="fileTable" styleClass="stylebutton" immediate="true">
+							</p:commandButton>
+						</h:panelGroup>
+
+						<p:spacer />
+						<p:dataTable id="fileTable" var="file" value="#{skillsUserDialog.displayedFiles}" selection="#{skillsUserDialog.selectedFiles}" scrollable="true"
+							rowKey="#{file.fileName}" scrollHeight="150" emptyMessage="#{CoreMsg['emptyTable']}">
+							<p:ajax event="rowSelectCheckbox" update="certificateDialogForm:tabView:download" listener="#{skillsUserDialog.setMultipleFiles()}" />
+							<p:ajax event="rowUnselectCheckbox" update="certificateDialogForm:tabView:download" listener="#{skillsUserDialog.setMultipleFiles()}" />
+							<p:ajax event="toggleSelect" update="certificateDialogForm:tabView:download" listener="#{skillsUserDialog.setMultipleFiles()}" />
+							<p:ajax event="rowSelect" update="certificateDialogForm:tabView:download" listener="#{skillsUserDialog.setMultipleFiles()}" />
+							<p:ajax event="rowUnselect" update="certificateDialogForm:tabView:download" listener="#{skillsUserDialog.setMultipleFiles()}" />
+
+							<p:column selectionMode="multiple" style="width:16px; text-align:center" />
+
+							<p:column headerText="#{SkillsMsg['skillsDialog.status']}">
+								<h:outputText value="#{skillsUserDialog.toUploadFile(file)}" />
+							</p:column>
+
+							<p:column filterBy="#{file.fileName}" headerText="Name" filterMatchMode="contains" sortBy="#{file.fileName}">
+								<h:outputText value="#{file.fileName}" />
+							</p:column>
+
+							<p:column headerText="#{SkillsMsg['skillsDialog.length']}">
+								<h:outputText value="#{file.cloudSafeEntity.lengthKb} KB" />
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+				<p />
+				<p:commandButton id="actionSaveCertificate" value="#{CoreMsg['ok']}" ajax="true" icon="pi pi-check" style="margin:0.5rem 1rem; width:8em"
+					action="#{skillsUserDialog.actionAddOrUpdateCertificate}" update="form:tabs:certificateTable form:tabs:jobProfileTable" />
+				<p:commandButton id="closeDialog2" value="#{CoreMsg['close']}" icon="fa fa-close" immediate="true" onclick="PF('certificateDialogVar').hide();"
+					style="width: 8em" />
+				<p />
+			</p:dialog>
+		</h:form>
+
+		<h:form id="jobProfileDialogForm">
+			<p:dialog widgetVar="jobProfileDialogVar" modal="true" id="jobProfileDialog">
+				<f:facet name="header">
+					<h:outputText style="margin-right: 0.3em;" class="fa fa-plus" rendered="#{skillsUserDialog.editObject == false}" />
+					<h:outputText value="#{SkillsMsg['skillsDialog.add']}" rendered="#{skillsUserDialog.editObject == false}" />
+					<h:outputText style="margin-right: 0.3em;" class="fa fa-pen" rendered="#{skillsUserDialog.editObject == true}" />
+					<h:outputText value="#{SkillsMsg['skillsDialog.edit']}" rendered="#{skillsUserDialog.editObject == true}" />
+				</f:facet>
+				<p:messages id="jobProfileDialogMsg" layout="table" globalOnly="false" showSummary="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
+
+				<h:panelGroup id="jobProfilePanel">
+					<h:panelGrid columns="2" cellpadding="4" cellspacing="4">
+						<p:outputLabel for="jobProfileSearch" value="#{SkillsMsg['SkillsUser.JobProfile']} " rendered="#{skillsUserDialog.editObject == false}" />
+						<p:autoComplete id="jobProfileSearch" required="true" forceSelection="true" dropdown="true" value="#{skillsUserDialog.jobProfileName}"
+							completeMethod="#{skillsUserDialog.actionCompleteJobProfile}" effect="fade" size="30" queryDelay="500" rendered="#{skillsUserDialog.editObject == false}" emptyMessage="#{SkillsMsg['error.noItemsFound']}" />
+						<p:outputLabel for="jobProfileName" value="#{SkillsMsg['SkillsUser.JobProfile']} " rendered="#{skillsUserDialog.editObject == true}" />
+						<h:outputText id="jobProfileName" value="#{skillsUserDialog.jobProfileName}" rendered="#{skillsUserDialog.editObject == true}" />
+
+						<p:outputLabel for="jobProfileDate" value="#{SkillsMsg['Skills.Date']} " />
+						<p:datePicker id="jobProfileDate" value="#{skillsUserDialog.skillsUserJobProfileEntity.date}" showIcon="true" showButtonBar="true" yearNavigator="true"
+							locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}">
+						</p:datePicker>
+
+					</h:panelGrid>
+				</h:panelGroup>
+
+
+				<p />
+				<p:commandButton id="actionSaveProfile" value="#{CoreMsg['ok']}" ajax="true" icon="pi pi-check" action="#{skillsUserDialog.actionAddOrUpdateJobProfile}"
+					update="form:tabs:jobProfileTable" style="margin:0.5rem 1rem; width:8em" />
+
+				<p:commandButton id="closeDialog3" value="#{CoreMsg['close']}" icon="fa fa-close" immediate="true" onclick="PF('jobProfileDialogVar').hide();"
+					style="width: 8em" />
+				<p />
+			</p:dialog>
+		</h:form>
+
+		<p:dialog id="noItemsFound" widgetVar="noItemsFound" header="Informations" width="400" closable="true" resizable="false" showEffect="clip" hideEffect="clip"
+			modal="false">
+
+			<p:messages id="messages" showDetail="true" autoUpdate="true" />
+			<p:button value="OK" onclick="PF(noItemsFound).hide();" />
+		</p:dialog>
+
+	</h:body>
+</f:view>
+</html>

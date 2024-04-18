@@ -1,0 +1,38 @@
+<html>
+
+<body>
+	<div>
+		Hello,
+		<p></p><br>
+		${Requester} has requested a new Certificate:
+		<p></p><br>
+		Name: ${Name}
+		<p></p>
+		<div style="width: 30em;">
+			Description: ${(Description)!"-"}
+		</div>
+		<p></p>
+		<div style="width: 30em;">
+			Issuer: ${(Issuer)!"Not listed. Please contact ${Name} to add the issuer."}
+		</div>
+		Applies to skills:
+		<#list appliedForSkills as skill>
+			<tr>
+				<td>${(skill.getNameWithParent())!"-"}</td>
+			</tr>
+		</#list>
+
+		<p></p><br>
+		The new certificate has been added to DoubleClue Skills, but is currently pending confirmation. While
+		the skill is not confirmed, users can already add it to their skill profiles.
+		Please visit the certificate view in DoubleClue Skills to confirm or edit the new certificate.
+		<p></p><br>
+		With best regards, <br>
+		your DoubleClue Skills Team
+		<p></p><br>
+
+	</div>
+
+</body>
+
+</html>

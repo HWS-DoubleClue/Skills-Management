@@ -1,0 +1,17 @@
+.dashboard-my-skills .ui-panel-titlebar {
+	background: transparent;
+}
+
+.skillsMemberTable .ui-datatable-tablewrapper {
+	max-height: 300px;
+}
+
+.skillsMemberTable .ui-datatable-tablewrapper thead th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+}
+
+.skillsMemberTable .ui-selectonemenu {
+	width: calc(100% - 26px);
+}

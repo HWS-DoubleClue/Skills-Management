@@ -1,0 +1,57 @@
+<html>
+
+<head>
+	<style>
+		th,
+		td {
+			padding-right: 15px;
+			text-align: left;
+		}
+	</style>
+</head>
+
+<body>
+	<p></p>
+	<div id="wrapper">
+		Hello ${Recipient},
+		<p></p><br>
+		the skills profile of ${SkillsUser} was changed by ${Operator}:
+
+		<#if changedSkills?has_content>
+			<br><br>
+			<b>Changed Skills:</b>
+			<ul>
+				<#list changedSkills?sort as skill>
+					<li>${skill}</li>
+				</#list>
+			</ul>
+		</#if>
+
+		<#if changedCertificates?has_content>
+			<br><br>
+			<b>Changed Certificates:</b>
+			<ul>
+				<#list changedCertificates?sort as cert>
+					<li>${cert}</li>
+				</#list>
+			</ul>
+		</#if>
+
+		<#if changedJobProfiles?has_content>
+			<br><br>
+			<b>Changed Skillsprofiles:</b>
+			<ul>
+				<#list changedJobProfiles?sort as profile>
+					<li>${profile}</li>
+				</#list>
+			</ul>
+		</#if>
+
+		With best regards, <br>
+		your DoubleClue Skills Team
+		<p></p><br>
+	</div>
+
+</body>
+
+</html>

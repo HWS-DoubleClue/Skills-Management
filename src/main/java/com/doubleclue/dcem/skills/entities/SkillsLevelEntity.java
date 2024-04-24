@@ -115,7 +115,7 @@ public class SkillsLevelEntity extends EntityInterface implements Comparable<Ski
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getSkill().getId(), level);
+		return Objects.hash(getSkill().getId(), level, priority);
 	}
 
 	@Override
@@ -132,10 +132,13 @@ public class SkillsLevelEntity extends EntityInterface implements Comparable<Ski
 
 	@Override
 	public int compareTo(SkillsLevelEntity skillsLevelEntity) {
-		if (skillsLevelEntity.priority == this.getPriority()) {
-			return skillsLevelEntity.getSkill().getName().compareTo(this.getSkill().getName());
+		if (this.getSkill().equals(skillsLevelEntity.getSkill()) == false) {
+			return this.getSkill().getNameWithParent().compareTo(skillsLevelEntity.getSkill().getNameWithParent());
+		} else if (this.getLevel() != skillsLevelEntity.getLevel()) {
+			return this.getLevel().compareTo(skillsLevelEntity.getLevel());
+		} else {
+			return this.getPriority() - skillsLevelEntity.getPriority();
 		}
-		return skillsLevelEntity.getPriority() - this.getPriority();
 	}
 
 	public int getPriority() {

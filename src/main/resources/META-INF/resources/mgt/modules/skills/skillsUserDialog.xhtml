@@ -14,11 +14,12 @@
 		<span id="customheader"> <h:outputLabel class="#{autoView.icon} dialogTitle" /> <h:outputLabel value="#{viewNavigator.dialogTitle}"
 				styleClass="dialogTitle" />
 		</span>
-		<p:messages showSummary="true" showDetail="false" closeable="true">
-			<p:autoUpdate />
-		</p:messages>
+
 
 		<h:form id="form">
+			<p:messages showSummary="true" showDetail="false" closable="true">
+				<p:autoUpdate />
+			</p:messages>
 
 			<h:panelGroup id="dialog-head-add-user" rendered="#{skillsUserDialog.addUser == true}">
 				<h:panelGrid columns="3" cellpadding="4">
@@ -214,8 +215,8 @@
 						</p:commandLink>
 						<p />
 
-						<p:dataTable id="jobProfileTable" value="#{skillsUserDialog.userJobProfiles}" var="userJobProfile" widgetVar="jobProfileTableVar" styleClass="skillsMemberTable"
-							scrollable="false" scrollHeight="280" emptyMessage="#{CoreMsg['emptyTable']}" selectionMode="multiple"
+						<p:dataTable id="jobProfileTable" value="#{skillsUserDialog.userJobProfiles}" var="userJobProfile" widgetVar="jobProfileTableVar"
+							styleClass="skillsMemberTable" scrollable="false" scrollHeight="280" emptyMessage="#{CoreMsg['emptyTable']}" selectionMode="multiple"
 							selection="#{skillsUserDialog.selectedUserJobProfiles}" rowKey="#{userJobProfile.jobProfile.name}">
 							<p:headerRow field="isProfileNotOwned()" expandable="true" expanded="true">
 								<p:column colspan="6">
@@ -494,12 +495,6 @@
 			</p:dialog>
 		</h:form>
 
-		<p:dialog id="noItemsFound" widgetVar="noItemsFound" header="Informations" width="400" closable="true" resizable="false" showEffect="clip" hideEffect="clip"
-			modal="false">
-
-			<p:messages id="messages" showDetail="true" autoUpdate="true" />
-			<p:button value="OK" onclick="PF(noItemsFound).hide();" />
-		</p:dialog>
 
 	</h:body>
 </f:view>

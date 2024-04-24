@@ -1000,6 +1000,9 @@ public class SkillsUserDialog extends DcemDialog {
 	}
 
 	public boolean isAvailableFrom() {
+		if (skillsUserEntity == null) {
+			return false;
+		}
 		return AvailabilityStatus.AvailableFrom.equals(skillsUserEntity.getAvailability());
 	}
 	

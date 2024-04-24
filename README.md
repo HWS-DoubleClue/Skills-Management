@@ -1,7 +1,9 @@
 # Skills
 
-Skills is a Skill Management Tool for small and medium enterprises.
-It runs as a Plugin Module in the Doubleclue Enterprise Management ( **DCEM** ). 
+Skills is a Skill Management Tool that allows you to track the skills of the staff in your company. 
+Skills records what abilities and certificates your employees have and shows it in a simple yet comprehensive overview. The detailed search enables you to check in seconds how many workers in your enterprise have which skills on which level. You can also search for several skills or define skill profiles to match with your employees' accomplishments. By defining skill targets a staff member shall achieve, it also improves your talent management and guides your employees to advance their growth.
+
+Skills runs as a Plugin Module in the Doubleclue Enterprise Management ( **DCEM** ). 
 You can find the DCEM repository at https://github.com/HWS-DoubleClue/IAM-Password-Manager. 
 
 For further details, have a look at the [Skills Manual](https://doubleclue.com/files/DC_Skills_Manual_en.pdf)

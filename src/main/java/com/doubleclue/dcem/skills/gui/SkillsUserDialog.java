@@ -184,11 +184,11 @@ public class SkillsUserDialog extends DcemDialog {
 			return;
 		}
 		skillsUserEntity = (SkillsUserEntity) dcemView.getActionObject();
-
 		if (action.equals(DcemConstants.ACTION_EDIT) || action.equals(SkillsConstants.ACTION_EDIT_MYSKILLS)) {
 			addUser = false;
 			dcemUser = skillsUserEntity.getDcemUser();
 			image = dcemUser.getPhoto();
+	//		userSkills = skillsUserEntity.getSkills();
 			userSkills = skillsUserLogic.getSkillsOfUser(skillsUserEntity.getId());
 			userCertificates = skillsCertificateLogic.getAllCertificatesFromUserWithFiles(skillsUserEntity);
 			userJobProfiles = skillsJobProfileEntityLogic.getJobProfilesOfUser(skillsUserEntity.getId());

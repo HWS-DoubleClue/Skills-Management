@@ -34,6 +34,7 @@ import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
 import com.doubleclue.dcem.core.gui.IPhoto;
 import com.doubleclue.dcem.core.jpa.VariableType;
+import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 import com.doubleclue.dcem.skills.entities.enums.AvailabilityStatus;
 
 @NamedEntityGraphs({ 
@@ -83,20 +84,24 @@ public class SkillsUserEntity extends EntityInterface implements Serializable, I
 
 	@DcemGui(visible = false)
 	@Id
+	@DcemCompare (ignore = true)
 	private Integer id;
 
 	@DcemGui(name = "Photo", subClass = "photo", variableType = VariableType.IMAGE)
 	@Transient
+	@DcemCompare (ignore = true)
 	byte[] photo;
 
 	@MapsId
 	@OneToOne
 	@JoinColumn(name = "skills_user_id", referencedColumnName = "dc_id", foreignKey = @ForeignKey(name = "FK_SKILLS_USER"), nullable = false, insertable = true, updatable = false)
-	@DcemGui(subClass = "displayName", ignoreCompare = true, sortOrder = SortOrder.ASCENDING)
+	@DcemGui(subClass = "displayName", sortOrder = SortOrder.ASCENDING)
+	@DcemCompare (ignore = true)
 	private DcemUser dcemUser;
 	
 	@DcemGui(visible = false)
 	@Transient
+	@DcemCompare (ignore = true)
 	private String loginId;
 	
 	@DcemGui(subClass = "skill")
@@ -122,11 +127,13 @@ public class SkillsUserEntity extends EntityInterface implements Serializable, I
 	
 	@ManyToOne
 	@JoinColumn(name = "skills_user_report_id", referencedColumnName = "dc_id", foreignKey = @ForeignKey(name = "FK_SKILLS_REPORT_USER"), nullable = true, insertable = true, updatable = true)
-	@DcemGui(subClass = "displayName", ignoreCompare = true, visible = false)
+	@DcemGui(subClass = "displayName", visible = false)
+	@DcemCompare (ignore = true)
 	private DcemUser reportsTo;
 	
 	@DcemGui (visible = false)
 	@Column (nullable = true)
+	@DcemCompare (withoutResult = true)
 	private String description;
 	
 	@DcemGui

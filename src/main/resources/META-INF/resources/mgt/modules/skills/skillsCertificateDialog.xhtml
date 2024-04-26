@@ -59,12 +59,8 @@
 					<f:selectItems value="#{skillsCertificateDialog.getAllSkills()}" var="skills" itemLabel="#{skills.name}" itemValue="#{skills}" />
 				</p:selectManyMenu>
 
-				<p:outputLabel for="approval" value="#{SkillsMsg['SkillsStatus.status']}" rendered="#{skillsCertificateDialog.isActionRequestCertificate() == false and skillsCertificateDialog.isActionAdd() == false}" />
-				<h:panelGrid columns="3" rendered="#{skillsCertificateDialog.isActionRequestCertificate() == false and skillsCertificateDialog.isActionAdd() == false}" >
-					<h:outputText id="approval" value="#{skillsCertificateDialog.getCertificateStatus(skillsCertificateDialog.skillsCertificateEntity)}" />
-					<p:spacer width="20"/>
-					<p:commandButton value="#{SkillsMsg['skillsDialog.approve']}" action="#{skillsCertificateDialog.actionApproveCertificate()}" rendered="#{skillsCertificateDialog.isCertificatePending()}" update="form" />
-				</h:panelGrid>
+				<p:outputLabel for="approval" value="#{SkillsMsg['SkillsStatus.status']}"  />
+				<h:outputText id="approval" value="#{skillsCertificateDialog.certificateStatus}" />
 
 			</h:panelGrid>
 			<p></p>

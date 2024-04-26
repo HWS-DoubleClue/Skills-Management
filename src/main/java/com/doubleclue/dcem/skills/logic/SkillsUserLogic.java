@@ -36,6 +36,7 @@ import com.doubleclue.dcem.core.entities.DcemAction;
 import com.doubleclue.dcem.core.entities.DcemUser;
 import com.doubleclue.dcem.core.entities.DcemUser_;
 import com.doubleclue.dcem.core.jpa.DcemTransactional;
+import com.doubleclue.dcem.core.logic.AuditingLogic;
 import com.doubleclue.dcem.core.logic.OperatorSessionBean;
 import com.doubleclue.dcem.skills.entities.SkillsCertificateEntity;
 import com.doubleclue.dcem.skills.entities.SkillsCertificatePriorityEntity;
@@ -71,6 +72,9 @@ public class SkillsUserLogic {
 
 	@Inject
 	OperatorSessionBean operatorSessionBean;
+	
+	@Inject
+	AuditingLogic auditingLogic;
 
 	@DcemTransactional
 	public void updateUserSkillEntity(SkillsUserEntity skillsUserEntity) throws Exception {
@@ -96,13 +100,13 @@ public class SkillsUserLogic {
 			skillsUserWithCertificates = updateCertificateFiles(skillsUserWithoutNewUploadedCertificates, mapCertificateToUploadedFiles, dcemAction);
 			em.persist(skillsUserWithCertificates);
 		} else {
+			skillsUserWithCertificates = updateCertificateFiles(skillsUserWithoutNewUploadedCertificates, mapCertificateToUploadedFiles, dcemAction);
+			auditingLogic.addAudit(dcemAction, skillsUserWithCertificates);
 			clearUserDataInDB(skillsUserWithoutNewUploadedCertificates);
 			if (deletedFiles != null) {
 				List<CloudSafeDto> deletedDbFiles = cloudSafeLogic.deleteCloudSafeFiles(deletedFiles, null, false);
 				cloudSafeLogic.deleteCloudSafeFilesContent(deletedDbFiles);
 			}
-			skillsUserWithCertificates = updateCertificateFiles(skillsUserWithoutNewUploadedCertificates, mapCertificateToUploadedFiles, dcemAction);
-
 			em.merge(skillsUserWithCertificates);
 		}
 	}

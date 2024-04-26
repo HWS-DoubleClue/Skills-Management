@@ -12,6 +12,7 @@ import javax.persistence.TypedQuery;
 import com.doubleclue.dcem.core.DcemConstants;
 import com.doubleclue.dcem.core.entities.DcemAction;
 import com.doubleclue.dcem.core.jpa.DcemTransactional;
+import com.doubleclue.dcem.core.logic.AuditingLogic;
 import com.doubleclue.dcem.skills.entities.SkillsIssuerEntity;
 
 @ApplicationScoped
@@ -20,12 +21,17 @@ public class SkillsIssuerLogic {
 
 	@Inject
 	EntityManager em;
+	
+	@Inject
+	AuditingLogic auditingLogic;
 
 	@DcemTransactional
 	public void addOrUpdateSkillsIssuer(SkillsIssuerEntity skillsIssuerEntity, DcemAction dcemAction) {
 		if (dcemAction.getAction().equals(DcemConstants.ACTION_ADD)) {
+			auditingLogic.addAudit(dcemAction, skillsIssuerEntity);
 			em.persist(skillsIssuerEntity);
 		} else {
+			auditingLogic.addAudit(dcemAction, skillsIssuerEntity);
 			em.merge(skillsIssuerEntity);
 		}
 	}

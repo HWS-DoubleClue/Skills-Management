@@ -2,6 +2,8 @@ package com.doubleclue.dcem.skills.gui;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,6 +49,7 @@ import com.doubleclue.dcem.skills.subjects.SkillsSubject;
 import com.doubleclue.dcem.skills.utils.SkillsUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @SessionScoped
 @Named
@@ -359,9 +362,10 @@ public class SkillsHierarchieView extends DcemView {
 		try {
 			List<Object> skillsEntitiesObj = autoViewBean.getSelectedItems();
 			List<SkillsEntity> skills = new ArrayList<SkillsEntity>(skillsEntitiesObj.size());
+			DcemAction dcemAction = operatorSessionBean.getPermission(new DcemAction(subject, SkillsConstants.APPROVE_SKILL));
 			for (Object skillObj : skillsEntitiesObj) {
 				skills.add((SkillsEntity) skillObj);
-				skillsLogic.approveSkills(skills);
+				skillsLogic.approveSkills(dcemAction, skills);
 			}
 			reload();
 			PrimeFaces.current().ajax().update("organigramForm");

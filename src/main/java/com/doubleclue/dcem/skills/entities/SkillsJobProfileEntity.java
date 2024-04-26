@@ -1,5 +1,6 @@
 package com.doubleclue.dcem.skills.entities;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -24,21 +25,22 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SortNatural;
 
 import com.doubleclue.dcem.core.entities.DcemUser;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
+import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 
 @NamedQueries({
-	@NamedQuery(name = SkillsJobProfileEntity.REMOVE_USER_FROM_MANAGED_BY_FROM_SKILLSPROFILE, query = "UPDATE SkillsJobProfileEntity jp SET jp.managedBy= null WHERE jp.managedBy = ?1"),
-	@NamedQuery(name = SkillsJobProfileEntity.GET_BY_SKILL, query = "SELECT DISTINCT jp FROM SkillsJobProfileEntity jp LEFT JOIN jp.skillLevels sl LEFT JOIN sl.skill s WHERE s = ?1 "),
-	@NamedQuery(name = SkillsJobProfileEntity.GET_BY_SKILLS_LEVELS, query = "SELECT DISTINCT jp FROM SkillsJobProfileEntity jp LEFT JOIN jp.skillLevels sl WHERE sl IN ?1"),
-	@NamedQuery(name = SkillsJobProfileEntity.GET_BY_NAME, query = "SELECT jp FROM SkillsJobProfileEntity jp WHERE jp.name = ?1 "),
-	@NamedQuery(name = SkillsJobProfileEntity.GET_BY_NAME_LIKE, query = "SELECT jp FROM SkillsJobProfileEntity jp WHERE lower(jp.name) LIKE lower(?1) ORDER BY jp.name ASC"),
-	@NamedQuery(name = SkillsJobProfileEntity.GET_SKILL_ID_AND_JOBPROFILE_COUNT_BY_SKILLS, query = "SELECT skill.id as id, COUNT(jp) as count FROM SkillsJobProfileEntity jp LEFT JOIN jp.skillLevels skillLevel LEFT JOIN skillLevel.skill skill WHERE skill in ?1 GROUP BY skill.id"), 		
-})
-
+		@NamedQuery(name = SkillsJobProfileEntity.REMOVE_USER_FROM_MANAGED_BY_FROM_SKILLSPROFILE, query = "UPDATE SkillsJobProfileEntity jp SET jp.managedBy= null WHERE jp.managedBy = ?1"),
+		@NamedQuery(name = SkillsJobProfileEntity.GET_BY_SKILL, query = "SELECT DISTINCT jp FROM SkillsJobProfileEntity jp LEFT JOIN jp.skillLevels sl LEFT JOIN sl.skill s WHERE s = ?1 "),
+		@NamedQuery(name = SkillsJobProfileEntity.GET_BY_SKILLS_LEVELS, query = "SELECT DISTINCT jp FROM SkillsJobProfileEntity jp LEFT JOIN jp.skillLevels sl WHERE sl IN ?1"),
+		@NamedQuery(name = SkillsJobProfileEntity.GET_BY_NAME, query = "SELECT jp FROM SkillsJobProfileEntity jp WHERE jp.name = ?1 "),
+		@NamedQuery(name = SkillsJobProfileEntity.GET_BY_NAME_LIKE, query = "SELECT jp FROM SkillsJobProfileEntity jp WHERE lower(jp.name) LIKE lower(?1) ORDER BY jp.name ASC"),
+		@NamedQuery(name = SkillsJobProfileEntity.GET_SKILL_ID_AND_JOBPROFILE_COUNT_BY_SKILLS, query = "SELECT skill.id as id, COUNT(jp) as count FROM SkillsJobProfileEntity jp LEFT JOIN jp.skillLevels skillLevel LEFT JOIN skillLevel.skill skill WHERE skill in ?1 GROUP BY skill.id"), })
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -67,7 +69,7 @@ public class SkillsJobProfileEntity extends EntityInterface {
 	@Column(nullable = true, name = "description")
 	private String description;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinTable(name = "skills_ref_skills_jobProfile", joinColumns = @JoinColumn(name = "dc_id"), foreignKey = @ForeignKey(name = "FK_SKILLS_JOBPROFILE"), inverseJoinColumns = @JoinColumn(name = "skills_level_id"), inverseForeignKey = @ForeignKey(name = "FK_JOBPROFILE_SKILLS"))
 	@DcemGui(visible = true, subClass = "skill", name = "Skills")
 	@SortNatural
@@ -80,14 +82,15 @@ public class SkillsJobProfileEntity extends EntityInterface {
 	private SortedSet<SkillsCertificatePriorityEntity> certificatesPriorities;
 
 	@DcemGui(name = "managedBy", subClass = "displayName")
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = true, foreignKey = @ForeignKey(name = "FK_JOBPROFILE_USER"), insertable = true, updatable = true)
+	@DcemCompare (ignore = true)
 	private DcemUser managedBy;
-	
+
 	public SkillsJobProfileEntity() {
-		
+
 	}
-	
+
 	public SkillsJobProfileEntity(String name) {
 		this.name = name;
 	}
@@ -169,7 +172,7 @@ public class SkillsJobProfileEntity extends EntityInterface {
 			certificatesPriorities = new TreeSet<>();
 		}
 		return certificatesPriorities;
-		
+
 	}
 
 	public void setCertificatesPriorities(SortedSet<SkillsCertificatePriorityEntity> certificatesPriorities) {

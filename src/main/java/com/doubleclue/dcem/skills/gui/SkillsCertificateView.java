@@ -48,7 +48,7 @@ public class SkillsCertificateView extends DcemView {
 		addAutoViewAction(DcemConstants.ACTION_EDIT, resourceBundle, skillsCertificateDialog, SkillsConstants.SKILLS_CERTIFICATE_DIALOG_PATH);
 		addAutoViewAction(DcemConstants.ACTION_DELETE, resourceBundle, skillsCertificateDialog, DcemConstants.AUTO_CONFIRM_DIALOG_PATH);
 		addAutoViewAction(SkillsConstants.REQUEST_CERTIFICATE, resourceBundle, skillsCertificateDialog, SkillsConstants.SKILLS_CERTIFICATE_DIALOG_PATH);
-		addAutoViewAction(SkillsConstants.APPROVE_CERTIFICATE, resourceBundle, null, null);
+		addAutoViewAction(SkillsConstants.APPROVE_CERTIFICATE, resourceBundle, skillsCertificateDialog, null);
 	}
 
 	@Override
@@ -61,19 +61,4 @@ public class SkillsCertificateView extends DcemView {
 		return super.createActionObject();
 	}
 	
-	public void actionApproveCertificate() {
-		try {
-			List<Object> certificateEntitiesObj = autoViewBean.getSelectedItems();
-			List<SkillsCertificateEntity> certificates = new ArrayList<SkillsCertificateEntity>(certificateEntitiesObj.size());
-			for (Object skillObj : certificateEntitiesObj) {
-				certificates.add((SkillsCertificateEntity) skillObj);
-			}
-			skillsCertificateLogic.approveCertificates(certificates);
-			PrimeFaces.current().ajax().update("autoForm:pTable");
-			JsfUtils.addInfoMessage(resourceBundle, "SkillsCertificate.approvalSuccess");
-		} catch (Exception e) {
-			JsfUtils.addErrorMessage(resourceBundle, "error.global");
-			logger.error("", e);
-		}
 	}
-}

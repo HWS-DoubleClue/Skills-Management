@@ -50,12 +50,15 @@ public class SkillsCertificateLogic {
 
 	@Inject
 	SkillsModule skillsModule;
+	
 
 	@DcemTransactional
 	public void addOrUpdateSkillsCertificate(SkillsCertificateEntity skillsCertificateEntity, DcemAction dcemAction) {
 		if (dcemAction.getAction().equals(SkillsConstants.ADD_CERTIFICATE)) {
+			auditingLogic.addAudit(dcemAction, skillsCertificateEntity);
 			em.persist(skillsCertificateEntity);
 		} else {
+			auditingLogic.addAudit(dcemAction, skillsCertificateEntity);
 			em.merge(skillsCertificateEntity);
 		}
 	}
@@ -179,9 +182,10 @@ public class SkillsCertificateLogic {
 
 	
 	@DcemTransactional
-	public void approveCertificates(List<SkillsCertificateEntity> certificates) throws Exception {
+	public void approveCertificates(DcemAction dcemAction, List<SkillsCertificateEntity> certificates) throws Exception {
 		for (SkillsCertificateEntity certificate : certificates) {
 			certificate = getCertificateById(certificate.getId());
+			auditingLogic.addAudit(dcemAction, certificate.getName());
 			certificate.setApprovalStatus(ApprovalStatus.APPROVED);
 			em.merge(certificate);
 		}

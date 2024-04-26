@@ -241,7 +241,7 @@ public class SkillsDialog extends DcemDialog {
 			JsfUtils.addErrorMessage(resourceBundle, "skillsDialog.errorDeletingParent");
 			return;
 		}
-		skillsLogic.deleteSkills(selectedSkills);
+		skillsLogic.deleteSkills(getAutoViewAction().getDcemAction(), selectedSkills);
 	}
 
 	public void leavingDialog() {

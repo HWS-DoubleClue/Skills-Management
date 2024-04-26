@@ -72,7 +72,7 @@ public class SkillsCertificateEntity extends EntityInterface implements Comparab
 	private ApprovalStatus approvalStatus;
 
 	@DcemGui
-	@ManyToOne
+	@ManyToOne (fetch = FetchType.LAZY)
 	@JoinColumn(name = "requested_from_id", referencedColumnName = "dc_id", foreignKey = @ForeignKey(name = "FK_CERTIFICATES_REQUESTEDFROM"), insertable = true)
 	private DcemUser requestedFrom;
 

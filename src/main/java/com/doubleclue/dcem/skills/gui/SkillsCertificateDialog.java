@@ -13,6 +13,7 @@ import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.PrimeFaces;
 
 import com.doubleclue.dcem.core.DcemConstants;
 import com.doubleclue.dcem.core.gui.AutoViewAction;
@@ -142,13 +143,6 @@ public class SkillsCertificateDialog extends DcemDialog {
 		}
 	}
 
-	public boolean isActionRequestCertificate() {
-		if (action == null || action.equals(SkillsConstants.REQUEST_CERTIFICATE) == false) {
-			return false;
-		}
-		return true;
-	}
-	
 	public boolean isActionAdd() {
 		if (action == null || action.equals(DcemConstants.ACTION_ADD) == false) {
 			return false;
@@ -172,7 +166,7 @@ public class SkillsCertificateDialog extends DcemDialog {
 				allSkills = skillsLogic.getAllObtainableSkillsWithFilteringNotApproved();
 				for (SkillsEntity skill : skillsCertificateEntity.getAppliesForSkills()) {
 					if (skill.isObtainable() == false) {
-						allSkills.add(skill); // add all existing but non-obtainable 
+						allSkills.add(skill); // add all existing but non-obtainable
 					}
 				}
 			}
@@ -183,20 +177,41 @@ public class SkillsCertificateDialog extends DcemDialog {
 			return new ArrayList<SkillsEntity>();
 		}
 	}
-	
-	public String getCertificateStatus(SkillsCertificateEntity skillsCertificateEntity) {
+
+	public String getCertificateStatus() {
 		if (skillsCertificateEntity == null || skillsCertificateEntity.getApprovalStatus() == null) {
 			return "-";
 		} else {
 			return skillsCertificateEntity.getApprovalStatus().getLocaleText();
 		}
 	}
-	
+
 	public void actionApproveCertificate() {
-		skillsCertificateEntity.setApprovalStatus(ApprovalStatus.APPROVED);
-		skillsCertificateEntity.setRequestedFrom(null);
+		try {
+			List<Object> certificateEntitiesObj = autoViewBean.getSelectedItems();
+			List<SkillsCertificateEntity> certificates = new ArrayList<SkillsCertificateEntity>(certificateEntitiesObj.size());
+			for (Object skillObj : certificateEntitiesObj) {
+				SkillsCertificateEntity skillsCertificateEntity = (SkillsCertificateEntity) skillObj;
+				if (skillsCertificateEntity.getApprovalStatus() == ApprovalStatus.PENDING) {
+					certificates.add(skillsCertificateEntity);
+				}
+			}
+			if (certificates.isEmpty() == false) {
+				skillsCertificateLogic.approveCertificates(getAutoViewAction().getDcemAction(), certificates);
+				PrimeFaces.current().ajax().update("autoForm:pTable");
+				JsfUtils.addInfoMessage(resourceBundle, "SkillsCertificate.approvalSuccess");
+			}
+		} catch (Exception e) {
+			JsfUtils.addErrorMessage(resourceBundle, "error.global");
+			logger.error("", e);
+		}
 	}
-	
+
+	// public void actionApproveCertificate() {
+	// skillsCertificateEntity.setApprovalStatus(ApprovalStatus.APPROVED);
+	// skillsCertificateEntity.setRequestedFrom(null);
+	// }
+
 	public boolean isCertificatePending() {
 		if (skillsCertificateEntity == null) {
 			return false;

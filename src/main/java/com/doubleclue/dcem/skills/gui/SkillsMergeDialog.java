@@ -98,7 +98,7 @@ public class SkillsMergeDialog extends DcemDialog {
 				JsfUtils.addErrorMessage(errorMsg); 
 				return false;
 			}
-			skillsLogic.mergeSkills(mainSkill, mergingSkill);
+			skillsLogic.mergeSkills(getAutoViewAction().getDcemAction(),  mainSkill, mergingSkill);
 			return true;
 		} catch (Exception e) {
 			logger.error("", e);

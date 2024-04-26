@@ -49,12 +49,17 @@ public class SkillsJobProfileEntityLogic {
 		SortedSet<SkillsLevelEntity> sortedSet = skillsLevelLogic.updateSkillsLevelEntities(skillsJobProfileEntity.getSkillLevels());
 		skillsJobProfileEntity.setSkillLevels(sortedSet);
 		if (dcemAction.getAction().equals(DcemConstants.ACTION_ADD)) {
+			auditingLogic.addAudit(dcemAction, skillsJobProfileEntity.getName());
 			em.persist(skillsJobProfileEntity);
 		} else {
+			auditingLogic.addAudit(dcemAction, skillsJobProfileEntity);
+			for (SkillsLevelEntity skillsLevelEntity : skillsJobProfileEntity.getSkillLevels()) {
+				System.out.println("SkillsJobProfileEntityLogic.addOrUpdate() " + skillsLevelEntity.getId() + " " + skillsLevelEntity.toString());
+			}
 			em.merge(skillsJobProfileEntity);
 			updateUserMatch(skillsJobProfileEntity);
 		}
-		auditingLogic.addAudit(dcemAction, skillsJobProfileEntity.toString());
+		
 	}
 
 	@DcemTransactional

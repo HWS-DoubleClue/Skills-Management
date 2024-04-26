@@ -27,6 +27,7 @@ import com.doubleclue.dcem.core.entities.DcemAction;
 import com.doubleclue.dcem.core.exceptions.DcemErrorCodes;
 import com.doubleclue.dcem.core.exceptions.DcemException;
 import com.doubleclue.dcem.core.jpa.DcemTransactional;
+import com.doubleclue.dcem.core.logic.AuditingLogic;
 import com.doubleclue.dcem.skills.entities.SkillsCertificateEntity;
 import com.doubleclue.dcem.skills.entities.SkillsEntity;
 import com.doubleclue.dcem.skills.entities.SkillsEntity_;
@@ -66,6 +67,9 @@ public class SkillsLogic {
 
 	@Inject
 	Event<SkillsMergeDTO> eventMerge;
+	
+	@Inject
+	AuditingLogic auditingLogic;
 
 	@DcemTransactional
 	public void addOrUpdateSkill(SkillsEntity skillEntity, DcemAction dcemAction) throws Exception {
@@ -81,10 +85,13 @@ public class SkillsLogic {
 					throw new DcemException(DcemErrorCodes.CONSTRAIN_VIOLATION_DB, "Skillname: " + skillEntity.toString(), null);
 				}
 			}
+			auditingLogic.addAudit(dcemAction, skillEntity);
 			em.persist(skillEntity);
 		} else {
+			auditingLogic.addAudit(dcemAction, skillEntity);
 			em.merge(skillEntity);
 		}
+		
 	}
 
 	public SkillsEntity getSkillById(int id) throws Exception {
@@ -217,32 +224,40 @@ public class SkillsLogic {
 	}
 
 	@DcemTransactional
-	public void deleteSkill(SkillsEntity skillsEntity) throws Exception {
+	public void deleteSkill(DcemAction dcemAction, SkillsEntity skillsEntity) throws Exception {
 		List<SkillsEntity> skillAsList = new ArrayList<SkillsEntity>();
 		skillAsList.add(skillsEntity);
-		deleteSkills(skillAsList);
+		deleteSkills(dcemAction, skillAsList);
 	}
 
 	@DcemTransactional
-	public void deleteSkills(List<SkillsEntity> skillsEntities) throws Exception {
+	public void deleteSkills(DcemAction dcemAction, List<SkillsEntity> skillsEntities) throws Exception {
 		skillsLevelLogic.deleteSkillsLevel(skillsLevelLogic.getSkillsLevelEntities(skillsEntities));
 		skillsUserLogic.deleteUserskillsBySkills(skillsEntities);
 		skillsCertificateLogic.removeSkillsFromCertificates(skillsEntities);
 		eventSkill.fire(skillsEntities);
+		StringBuffer sb = new StringBuffer();
 		for (SkillsEntity skillsEntity : skillsEntities) {
 			skillsEntity = em.merge(skillsEntity);
 			em.remove(skillsEntity);
+			sb.append(skillsEntity.getName());
+			sb.append(", ");
 		}
+		auditingLogic.addAudit(dcemAction, sb.toString());
 	}
 
 	@DcemTransactional
-	public void approveSkills(List<SkillsEntity> skillsEntities) throws Exception {
+	public void approveSkills(DcemAction dcemAction,  List<SkillsEntity> skillsEntities) throws Exception {
+		StringBuffer sb = new StringBuffer();
 		for (SkillsEntity skill : skillsEntities) {
 			skill = getSkillById(skill.getId());
 			skill.setApprovalStatus(ApprovalStatus.APPROVED);
 			skill.setRequestedFrom(null);
 			em.merge(skill);
+			sb.append(skill);
+			sb.append(", ");
 		}
+		auditingLogic.addAudit(dcemAction, sb.toString());
 	}
 
 	public HashMap<Integer, Long> getUserCountForSkills(List<SkillsEntity> skillsEntities) throws Exception {
@@ -278,14 +293,13 @@ public class SkillsLogic {
 	}
 
 	@DcemTransactional
-	public void mergeSkills(SkillsEntity mainSkill, SkillsEntity mergingSkill) throws Exception {
+	public void mergeSkills(DcemAction dcemAction, SkillsEntity mainSkill, SkillsEntity mergingSkill) throws Exception {
 		replaceSkillInCertificate(mainSkill, mergingSkill);
 		replaceSkillInUser(mainSkill, mergingSkill);
 		replaceSkillInJobProfile(mainSkill, mergingSkill);
 		replaceChildrenReference(mainSkill, mergingSkill);
-
 		eventMerge.fire(new SkillsMergeDTO(mainSkill, mergingSkill));
-		deleteSkill(mergingSkill);
+		deleteSkill(dcemAction, mergingSkill);
 	}
 
 	private void replaceSkillInCertificate(SkillsEntity mainSkill, SkillsEntity mergingSkill) throws Exception {

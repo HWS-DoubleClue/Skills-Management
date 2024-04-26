@@ -37,7 +37,7 @@ public class SkillsCertificateSubject extends SubjectAbs {
 				ActionSelection.ONE_OR_MORE);
 		rawActionApprove.setIcon("fa fa-check");
 		rawActionApprove.setActionType(ActionType.EL_METHOD);
-		rawActionApprove.setElMethodExpression("#{skillsCertificateView.actionApproveCertificate()}");
+		rawActionApprove.setElMethodExpression("#{skillsCertificateDialog.actionApproveCertificate()}");
 		rawActions.add(rawActionApprove);
 
 		rawActions.add(new RawAction(DcemConstants.ACTION_VIEW,  new String[] { DcemConstants.SYSTEM_ROLE_USER}));

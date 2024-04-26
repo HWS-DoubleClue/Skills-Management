@@ -30,6 +30,7 @@ import org.primefaces.model.SortOrder;
 import com.doubleclue.dcem.core.entities.DcemUser;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
+import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 import com.doubleclue.dcem.skills.entities.enums.ApprovalStatus;
 import com.doubleclue.dcem.skills.logic.SkillsConstants;
 
@@ -72,6 +73,7 @@ public class SkillsEntity extends EntityInterface {
 
 	@DcemGui
 	@Size(max = 255)
+	@DcemCompare (withoutResult = true)
 	private String description;
 
 	@DcemGui

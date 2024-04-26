@@ -14,6 +14,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 
 import com.doubleclue.dcem.core.DcemConstants;
+import com.doubleclue.dcem.core.entities.DcemAction;
 import com.doubleclue.dcem.core.gui.AutoViewBean;
 import com.doubleclue.dcem.core.gui.DcemView;
 import com.doubleclue.dcem.core.gui.JsfUtils;
@@ -90,13 +91,14 @@ public class SkillsView extends DcemView implements Serializable {
 	}
 
 	public void actionApproveSkills() {
+		DcemAction dcemAction = operatorSessionBean.getPermission(new DcemAction(subject, SkillsConstants.APPROVE_SKILL));
 		try {
 			List<Object> skillsEntitiesObj = autoViewBean.getSelectedItems();
 			List<SkillsEntity> skills = new ArrayList<SkillsEntity>(skillsEntitiesObj.size());
 			for (Object skillObj : skillsEntitiesObj) {
 				skills.add((SkillsEntity) skillObj);
 			}
-			skillsLogic.approveSkills(skills);
+			skillsLogic.approveSkills(dcemAction, skills);
 			PrimeFaces.current().ajax().update("autoForm:pTable");
 			JsfUtils.addInfoMessage(resourceBundle, "skills.approvalSuccess");
 		} catch (Exception e) {

@@ -62,10 +62,10 @@ primary key (dc_id, skills_level_id)
 create table skills_skills (
 skills_id integer not null auto_increment,
 abbreviation varchar(255),
+dc_status integer not null,
 description varchar(255),
 skills_name varchar(255),
 obtainable bit not null,
-dc_status integer not null,
 parent_id integer,
 requested_from_id integer,
 primary key (skills_id)
@@ -84,6 +84,8 @@ skills_user_id integer not null,
 dc_availability integer not null,
 availableFrom date,
 description varchar(255),
+disableNotifications bit not null,
+receiveRequests bit not null,
 skills_user_report_id integer,
 primary key (skills_user_id)
 ) engine=InnoDB;

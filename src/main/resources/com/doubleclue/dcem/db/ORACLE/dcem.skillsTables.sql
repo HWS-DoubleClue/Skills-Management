@@ -62,10 +62,10 @@ primary key (dc_id, skills_level_id)
 create table skills_skills (
 skills_id number(10,0) generated as identity,
 abbreviation varchar2(255 char),
+dc_status number(10,0) not null,
 description varchar2(255 char),
 skills_name varchar2(255 char),
 obtainable number(1,0) not null,
-dc_status number(10,0) not null,
 parent_id number(10,0),
 requested_from_id number(10,0),
 primary key (skills_id)
@@ -84,6 +84,8 @@ skills_user_id number(10,0) not null,
 dc_availability number(10,0) not null,
 availableFrom date,
 description varchar2(255 char),
+disableNotifications number(1,0) not null,
+receiveRequests number(1,0) not null,
 skills_user_report_id number(10,0),
 primary key (skills_user_id)
 );

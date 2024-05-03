@@ -104,15 +104,15 @@ public class SkillsUserEntity extends EntityInterface implements Serializable, I
 	@DcemCompare (ignore = true)
 	private String loginId;
 	
-	@DcemGui(subClass = "skill")
+	@DcemGui(subClass = "skill", variableType = VariableType.LIST)
 	@OneToMany(mappedBy = "skillsUserEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SkillsUserSkillEntity> skills;
 
-	@DcemGui(subClass = "jobProfile", name = "JobProfiles")
+	@DcemGui(subClass = "jobProfile", name = "JobProfiles", variableType = VariableType.LIST)
 	@OneToMany(mappedBy = "skillsUserEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SkillsUserJobProfileEntity> userJobProfiles;
 
-	@DcemGui(subClass = "skillsCertificateEntity")
+	@DcemGui(subClass = "skillsCertificateEntity", variableType = VariableType.LIST)
 	@OneToMany(mappedBy = "skillsUserEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SkillsUserCertificateEntity> certificates;
 	

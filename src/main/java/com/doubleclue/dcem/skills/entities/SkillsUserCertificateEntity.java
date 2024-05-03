@@ -79,7 +79,6 @@ public class SkillsUserCertificateEntity extends EntityInterface implements Skil
 	@JoinColumn(referencedColumnName = "skills_certificate_id", foreignKey = @ForeignKey(name = "FK_CERTIFICATE_USERCERTIFICATE"), name = "skills_certificate_id", nullable = false, insertable = true, updatable = true)
 	private SkillsCertificateEntity skillsCertificateEntity;
 
-	@DcemGui(visible = false)
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_certificate_files", joinColumns = @JoinColumn(name = "certificate_id"), foreignKey = @ForeignKey(name = "FK_FILES_CERTIFICATE"), inverseJoinColumns = @JoinColumn(name = "file_id"), inverseForeignKey = @ForeignKey(name = "FK_CERTIFICATE_FILE"))
 	private List<CloudSafeEntity> files;

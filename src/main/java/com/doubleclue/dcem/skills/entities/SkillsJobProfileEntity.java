@@ -32,6 +32,7 @@ import org.hibernate.annotations.SortNatural;
 import com.doubleclue.dcem.core.entities.DcemUser;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
+import com.doubleclue.dcem.core.jpa.VariableType;
 import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 
 @NamedQueries({
@@ -71,11 +72,11 @@ public class SkillsJobProfileEntity extends EntityInterface {
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinTable(name = "skills_ref_skills_jobProfile", joinColumns = @JoinColumn(name = "dc_id"), foreignKey = @ForeignKey(name = "FK_SKILLS_JOBPROFILE"), inverseJoinColumns = @JoinColumn(name = "skills_level_id"), inverseForeignKey = @ForeignKey(name = "FK_JOBPROFILE_SKILLS"))
-	@DcemGui(visible = true, subClass = "skill", name = "Skills")
+	@DcemGui(visible = true, subClass = "skill", name = "Skills", variableType = VariableType.LIST)
 	@SortNatural
 	private SortedSet<SkillsLevelEntity> skillLevels;
 
-	@DcemGui(visible = true, subClass = "certificateEntity", name = "Certificates")
+	@DcemGui(visible = true, subClass = "certificateEntity", name = "Certificates", variableType = VariableType.LIST)
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_ref_certificate_priority_jobProfile", joinColumns = @JoinColumn(name = "dc_id"), foreignKey = @ForeignKey(name = "FK_CERTIFICATE__PRIORITY_JOBPROFILE"), inverseJoinColumns = @JoinColumn(name = "certificate_priority_id"), inverseForeignKey = @ForeignKey(name = "FK_JOBPROFILE_CERTIFICATE"))
 	@SortNatural

@@ -30,6 +30,7 @@ import org.primefaces.model.SortOrder;
 import com.doubleclue.dcem.core.entities.DcemUser;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
+import com.doubleclue.dcem.core.jpa.VariableType;
 import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 import com.doubleclue.dcem.skills.entities.enums.ApprovalStatus;
 import com.doubleclue.dcem.skills.logic.SkillsConstants;
@@ -66,6 +67,10 @@ public class SkillsEntity extends EntityInterface {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(referencedColumnName = "skills_id", foreignKey = @ForeignKey(name = "FK_SKILLS_PARENT"), name = "parent_id", nullable = true, insertable = true, updatable = true)
 	private SkillsEntity parent;
+	
+	@DcemGui(visible = false, variableType = VariableType.LIST)
+	@OneToMany(mappedBy = "parent")
+	private List<SkillsEntity> children;
 
 	@DcemGui
 	@Size(max = 63)
@@ -85,9 +90,6 @@ public class SkillsEntity extends EntityInterface {
 	@ManyToOne
 	@JoinColumn(name = "requested_from_id", referencedColumnName = "dc_id", foreignKey = @ForeignKey(name = "FK_SKILLS_REQUESTEDFROM"), insertable = true)
 	private DcemUser requestedFrom;
-
-	@OneToMany(mappedBy = "parent")
-	private List<SkillsEntity> children;
 
 	@DcemGui
 	@Column(name = "obtainable", nullable = false)

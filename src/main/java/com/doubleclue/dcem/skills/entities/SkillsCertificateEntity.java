@@ -26,6 +26,7 @@ import javax.validation.constraints.Size;
 import com.doubleclue.dcem.core.entities.DcemUser;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
+import com.doubleclue.dcem.core.jpa.VariableType;
 import com.doubleclue.dcem.skills.entities.enums.ApprovalStatus;
 
 @NamedQueries({
@@ -61,7 +62,7 @@ public class SkillsCertificateEntity extends EntityInterface implements Comparab
 	@JoinColumn(referencedColumnName = "skills_issuer_id", foreignKey = @ForeignKey(name = "FK_CERTIFICATE_ISSUER"), name = "issuer_id", nullable = true, insertable = true, updatable = true)
 	private SkillsIssuerEntity issuer;
 
-	@DcemGui(subClass = "name")
+	@DcemGui(subClass = "name", variableType = VariableType.LIST)
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_certificate_skills", joinColumns = @JoinColumn(name = "certificate_id"), foreignKey = @ForeignKey(name = "FK_SKILLS_CERTIFICATE"), inverseJoinColumns = @JoinColumn(name = "skills_id"), inverseForeignKey = @ForeignKey(name = "FK_CERTIFICATE_SKILLS"))
 	private List<SkillsEntity> appliesForSkills;

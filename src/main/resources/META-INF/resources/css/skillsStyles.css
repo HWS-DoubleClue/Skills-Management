@@ -15,3 +15,10 @@
 .skillsMemberTable .ui-selectonemenu {
 	width: calc(100% - 26px);
 }
+
+.skill-tree-node-link {
+	text-decoration: underline;
+	color: var(--header-link-text-color);
+	cursor: pointer;
+	font-weight: bold;
+}

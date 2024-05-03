@@ -26,7 +26,7 @@
 				<p:cellEditor >
 					<f:facet name="output">
 						<h:outputText value="#{skillsTreeTable.getSkillsLevelOutput(skillTreeNode.skillsLevel)}"
-							style="	text-decoration: underline; color: blue; cursor: pointer;" rendered="#{skillTreeNode.skillsLevel ne 'No' or skillTreeNode.skillsEntity.obtainable}" />
+							styleClass="skill-tree-node-link" rendered="#{skillTreeNode.skillsLevel ne 'No' or skillTreeNode.skillsEntity.obtainable}" />
 					</f:facet>
 					<f:facet name="input">
 						<p:selectOneMenu value="#{skillTreeNode.skillsLevel}" rendered="#{skillTreeNode.skillsLevel ne 'No' or skillTreeNode.skillsEntity.obtainable}" >
@@ -41,7 +41,7 @@
 				<p:cellEditor>
 					<f:facet name="output">
 						<h:outputText value="#{skillTreeNode.priority}" rendered="#{skillTreeNode.skillsLevel ne 'No' or skillTreeNode.skillsEntity.obtainable}"
-							style="	text-decoration: underline; color: blue; cursor: pointer;" />
+							styleClass="skill-tree-node-link" />
 					</f:facet>
 					<f:facet name="input" >
 						<p:selectOneMenu value="#{skillTreeNode.priority}" rendered="#{skillTreeNode.skillsLevel ne 'No' or skillTreeNode.skillsEntity.obtainable}" >

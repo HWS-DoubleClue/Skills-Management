@@ -99,11 +99,6 @@ public class SkillsUserEntity extends EntityInterface implements Serializable, I
 	@DcemCompare (ignore = true)
 	private DcemUser dcemUser;
 	
-	@DcemGui(visible = false)
-	@Transient
-	@DcemCompare (ignore = true)
-	private String loginId;
-	
 	@DcemGui(subClass = "skill", variableType = VariableType.LIST)
 	@OneToMany(mappedBy = "skillsUserEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SkillsUserSkillEntity> skills;
@@ -194,17 +189,6 @@ public class SkillsUserEntity extends EntityInterface implements Serializable, I
 		this.dcemUser = dcemUser;
 	}
 	
-	public String getLoginId() {
-		if (dcemUser != null) {
-			loginId = dcemUser.getLoginId();
-		}
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
 	@Override
 	public String toString() {
 		if (dcemUser != null) {

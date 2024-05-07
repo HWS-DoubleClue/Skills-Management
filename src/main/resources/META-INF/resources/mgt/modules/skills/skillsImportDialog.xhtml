@@ -48,7 +48,7 @@
 				<p:tab id="skillsTab" title="Skills">
 					<h:panelGroup id="skillsImport">
 						<div style="border-top: 2px solid lightgray; border-left: 2px solid lightgray; border-right: 2px solid lightgray">
-							<div class="ui-g" align="left" style="border-bottom: 2px solid lightgray; height: 3.3em; color: #005078">
+							<div class="ui-g" align="left" style="border-bottom: 2px solid lightgray; height: 3.3em; color: var(--header-link-text-color)">
 								<div class="ui-g-3">
 									<h:outputText value="#{SkillsMsg['skillsImportDialog.skillName']}" styleClass="topRow" />
 								</div>
@@ -72,7 +72,7 @@
 										<h:outputText value="#{skillsImportDialog.getLevelInStars(jobProfileSkill.level)}" escape="false" />
 									</div>
 									<div class="ui-g-3">
-										<p:commandLink style="font-size: 1.7em; color: #005078; padding-left: 70px" action="#{skillsImportDialog.importToUser(jobProfileSkill)}"
+										<p:commandLink style="font-size: 1.7em; color: var(--header-link-text-color); padding-left: 70px" action="#{skillsImportDialog.importToUser(jobProfileSkill)}"
 											update="skillsImport form:matchValue" rendered="#{skillsImportDialog.showImportArrowSkills(jobProfileSkill)}">
 											<i class="fa-solid fa-arrow-right"></i>
 										</p:commandLink>
@@ -88,7 +88,7 @@
 				<p:tab id="certificatesTab" title="Certificates">
 					<h:panelGroup id="certificateImport">
 						<div style="border-top: 2px solid lightgray; border-left: 2px solid lightgray; border-right: 2px solid lightgray">
-							<div class="ui-g" align="left" style="border-bottom: 2px solid lightgray; height: 3.3em; color: #005078">
+							<div class="ui-g" align="left" style="border-bottom: 2px solid lightgray; height: 3.3em; color: var(--header-link-text-color)">
 								<div class="ui-g-8">
 									<h:outputText value="#{SkillsMsg['skillsImportDialog.certificateName']}" styleClass="topRow" />
 								</div>

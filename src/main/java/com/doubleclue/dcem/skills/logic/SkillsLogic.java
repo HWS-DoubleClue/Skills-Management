@@ -238,28 +238,28 @@ public class SkillsLogic {
 		skillsUserLogic.deleteUserskillsBySkills(skillsEntities);
 		skillsCertificateLogic.removeSkillsFromCertificates(skillsEntities);
 		eventSkill.fire(skillsEntities);
-		StringBuffer sb = new StringBuffer();
+		List<String> skillsName = new ArrayList<String>(skillsEntities.size());
 		for (SkillsEntity skillsEntity : skillsEntities) {
 			skillsEntity = em.merge(skillsEntity);
 			em.remove(skillsEntity);
-			sb.append(skillsEntity.getName());
-			sb.append(", ");
+			skillsName.add(skillsEntity.getName());
 		}
-		auditingLogic.addAudit(dcemAction, sb.toString());
+		auditingLogic.addAudit(dcemAction, String.join(", ", skillsName));
 	}	
+
 	
 	@DcemTransactional
 	public void approveSkills(DcemAction dcemAction,  List<SkillsEntity> skillsEntities) throws Exception {
 		StringBuffer sb = new StringBuffer();
+		List<String> skillNames = new ArrayList<String>(skillsEntities.size());
 		for (SkillsEntity skill : skillsEntities) {
 			skill = getSkillById(skill.getId());
 			skill.setApprovalStatus(ApprovalStatus.APPROVED);
 			skill.setRequestedFrom(null);
 			em.merge(skill);
-			sb.append(skill);
-			sb.append(", ");
+			skillNames.add(skill.getNameWithParent());
 		}
-		auditingLogic.addAudit(dcemAction, sb.toString());
+		auditingLogic.addAudit(dcemAction, String.join(", ", skillNames));
 	}
 
 	public HashMap<Integer, Long> getUserCountForSkills(List<SkillsEntity> skillsEntities) throws Exception {

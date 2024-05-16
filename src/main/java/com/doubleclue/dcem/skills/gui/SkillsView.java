@@ -26,6 +26,7 @@ import com.doubleclue.dcem.core.jpa.JpaLazyModel;
 import com.doubleclue.dcem.core.jpa.VariableType;
 import com.doubleclue.dcem.core.logic.OperatorSessionBean;
 import com.doubleclue.dcem.skills.entities.SkillsEntity;
+import com.doubleclue.dcem.skills.entities.enums.ApprovalStatus;
 import com.doubleclue.dcem.skills.logic.SkillsConstants;
 import com.doubleclue.dcem.skills.logic.SkillsLogic;
 import com.doubleclue.dcem.skills.logic.SkillsModule;
@@ -56,7 +57,7 @@ public class SkillsView extends DcemView implements Serializable {
 
 	@Inject
 	SkillsSubject skillSubject;
-	
+
 	@Inject
 	SkillsMergeDialog skillsMergeDialog;
 
@@ -91,35 +92,52 @@ public class SkillsView extends DcemView implements Serializable {
 	}
 
 	public void actionApproveSkills() {
-		DcemAction dcemAction = operatorSessionBean.getPermission(new DcemAction(subject, SkillsConstants.APPROVE_SKILL));
 		try {
-			List<Object> skillsEntitiesObj = autoViewBean.getSelectedItems();
-			List<SkillsEntity> skills = new ArrayList<SkillsEntity>(skillsEntitiesObj.size());
-			for (Object skillObj : skillsEntitiesObj) {
-				skills.add((SkillsEntity) skillObj);
+			DcemAction dcemAction = operatorSessionBean.getPermission(new DcemAction(subject, SkillsConstants.APPROVE_SKILL));
+			boolean skillsGotApproved = actionApproveSkills(autoViewBean.getSelectedItems(), dcemAction);
+			if (skillsGotApproved) {
+				PrimeFaces.current().ajax().update("autoForm:pTable");
+				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalSuccess");
+			} else {
+				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalFailedAlreadyApproved");				
 			}
-			skillsLogic.approveSkills(dcemAction, skills);
-			PrimeFaces.current().ajax().update("autoForm:pTable");
-			JsfUtils.addInfoMessage(resourceBundle, "skills.approvalSuccess");
 		} catch (Exception e) {
 			JsfUtils.addErrorMessage(resourceBundle, "error.global");
 			logger.error("", e);
 		}
 	}
-	
+
+	public boolean actionApproveSkills(List<Object> skillsEntitiesObj, DcemAction dcemAction) throws Exception {
+		List<SkillsEntity> skills = new ArrayList<SkillsEntity>(skillsEntitiesObj.size());
+		for (Object skillObj : skillsEntitiesObj) {
+			SkillsEntity skill = (SkillsEntity) skillObj;
+			if (skill.getApprovalStatus().equals(ApprovalStatus.PENDING)) {
+				skills.add(skill);
+			}
+		}
+		if (skills.isEmpty()) {
+			return false;
+		}
+		skillsLogic.approveSkills(dcemAction, skills);
+		for (SkillsEntity skill : skills) { // update selection
+			skill.setApprovalStatus(ApprovalStatus.APPROVED);
+		}
+		return true;
+	}
+
 	public LazyDataModel<?> getLazyModel() {
 		if (lazyModel == null) {
 			lazyModel = new JpaLazyModel<>(em, this);
 			for (ViewVariable viewVariable : getViewVariables()) {
-				
+
 				if (viewVariable.getId().equals("name")) {
-					lazyModel.addPreFilterProperties(
-							new FilterProperty(viewVariable.getAttributes(), SkillsConstants.SKILLS_ROOT, null, VariableType.STRING, FilterOperator.NOT_EQUALS));
+					lazyModel.addPreFilterProperties(new FilterProperty(viewVariable.getAttributes(), SkillsConstants.SKILLS_ROOT, null, VariableType.STRING,
+							FilterOperator.NOT_EQUALS));
 					break;
 				}
 			}
 		}
 		return lazyModel;
 	}
-	
+
 }

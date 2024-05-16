@@ -50,7 +50,6 @@ import com.doubleclue.dcem.skills.utils.SkillsUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @SessionScoped
 @Named
 public class SkillsHierarchieView extends DcemView {
@@ -71,6 +70,9 @@ public class SkillsHierarchieView extends DcemView {
 
 	@Inject
 	SkillsDashboardView skillsDashboardView;
+
+	@Inject
+	SkillsView skillsView;
 
 	@Inject
 	SkillsDialog skillsDialog;
@@ -119,7 +121,6 @@ public class SkillsHierarchieView extends DcemView {
 
 	@Override
 	public void reload() {
-		autoViewBean.setSelectedItems(new ArrayList<Object>()); // remove prev. selection
 		if (dcemUser == null) {
 			dcemUser = operatorSessionBean.getDcemUser();
 			image = dcemUser.getPhoto();
@@ -131,7 +132,7 @@ public class SkillsHierarchieView extends DcemView {
 			SkillsUserEntity skillsUserEntity = skillsUserLogic.retrieveSkillsUserByDcemUser(dcemUser);
 			mySkills = skillsUserEntity.getSkills();
 			for (SkillsUserSkillEntity skillsUserSkillEntity : mySkills) {
-				skillsUserSkillEntity.getSkill();  // avoiding lazy exception
+				skillsUserSkillEntity.getSkill(); // avoiding lazy exception
 				skillsUserSkillEntity.getLevel();
 			}
 		} catch (Exception e) {
@@ -208,8 +209,8 @@ public class SkillsHierarchieView extends DcemView {
 	public String getLevel(SkillsUserSkillEntity skillsUserSkillEntity) {
 		return SkillsUtils.convertLevelToStars(skillsUserSkillEntity.getLevel());
 	}
-	
-	public String getStatusIcon (SkillsUserSkillEntity skillsUserSkillEntity) {
+
+	public String getStatusIcon(SkillsUserSkillEntity skillsUserSkillEntity) {
 		return skillsUserSkillEntity.getStatus().getIcon();
 	}
 
@@ -223,10 +224,10 @@ public class SkillsHierarchieView extends DcemView {
 			}
 		}
 		Collections.sort(list, new Comparator<SkillsUserSkillEntity>() {
-		    @Override
-		    public int compare(SkillsUserSkillEntity lhs, SkillsUserSkillEntity rhs) {
-		        return lhs.getLevel().ordinal() - (rhs.getLevel().ordinal());
-		    }
+			@Override
+			public int compare(SkillsUserSkillEntity lhs, SkillsUserSkillEntity rhs) {
+				return lhs.getLevel().ordinal() - (rhs.getLevel().ordinal());
+			}
 		});
 		return list;
 	}
@@ -361,22 +362,14 @@ public class SkillsHierarchieView extends DcemView {
 
 	public void actionApproveSkills() {
 		try {
-			List<Object> skillsEntitiesObj = autoViewBean.getSelectedItems();
-			List<SkillsEntity> skills = new ArrayList<SkillsEntity>(skillsEntitiesObj.size());
 			DcemAction dcemAction = operatorSessionBean.getPermission(new DcemAction(subject, SkillsConstants.APPROVE_SKILL));
-			for (Object skillObj : skillsEntitiesObj) {
-				SkillsEntity skill = (SkillsEntity) skillObj;
-				if (skill.getApprovalStatus().equals(ApprovalStatus.PENDING)) {
-					skills.add(skill);
-				}
-			}
-			if (skills.isEmpty()) {
-				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalFailedAlreadyApproved");				
-			} else {
-				skillsLogic.approveSkills(dcemAction, skills);
+			boolean skillsGotApproved = skillsView.actionApproveSkills(autoViewBean.getSelectedItems(), dcemAction);
+			if (skillsGotApproved) {
 				reload();
 				PrimeFaces.current().ajax().update("organigramForm");
 				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalSuccess");
+			} else {
+				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalFailedAlreadyApproved");				
 			}
 		} catch (Exception e) {
 			JsfUtils.addErrorMessage(resourceBundle, "error.global");
@@ -393,7 +386,6 @@ public class SkillsHierarchieView extends DcemView {
 	public boolean isEditMySkill() {
 		return editMySkill;
 	}
-	
 
 	public StreamedContent getUserPhoto() {
 		try {
@@ -412,7 +404,6 @@ public class SkillsHierarchieView extends DcemView {
 		reload();
 	}
 
-	
 	public void collapseListener(OrganigramNodeCollapseEvent collapseEvent) {
 		Integer id = ((SkillsEntity) collapseEvent.getOrganigramNode().getData()).getId();
 		collapsSet.add(id);

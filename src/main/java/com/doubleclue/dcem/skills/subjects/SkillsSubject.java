@@ -33,8 +33,9 @@ public class SkillsSubject extends SubjectAbs {
 		rawActions.add(rawAction);
 		
 		RawAction rawActionRequest = new RawAction(SkillsConstants.REQUEST_SKILLS,
-				new String[] { DcemConstants.SYSTEM_ROLE_SUPERADMIN, DcemConstants.SYSTEM_ROLE_ADMIN, DcemConstants.SYSTEM_ROLE_USER });
+				new String[] { DcemConstants.SYSTEM_ROLE_SUPERADMIN, DcemConstants.SYSTEM_ROLE_ADMIN, DcemConstants.SYSTEM_ROLE_USER }, ActionSelection.CREATE_OBJECT);
 		rawActionRequest.setIcon("fa fa-plus");
+		rawActionRequest.setActionType(ActionType.CREATE_OBJECT);
 		rawActions.add(rawActionRequest);
 		
 		RawAction rawActionApprove = new RawAction(SkillsConstants.APPROVE_SKILL, new String[] { DcemConstants.SYSTEM_ROLE_SUPERADMIN, DcemConstants.SYSTEM_ROLE_ADMIN },

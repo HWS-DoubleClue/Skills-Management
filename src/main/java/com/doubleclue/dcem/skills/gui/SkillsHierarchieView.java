@@ -119,6 +119,7 @@ public class SkillsHierarchieView extends DcemView {
 
 	@Override
 	public void reload() {
+		autoViewBean.setSelectedItems(new ArrayList<Object>()); // remove prev. selection
 		if (dcemUser == null) {
 			dcemUser = operatorSessionBean.getDcemUser();
 			image = dcemUser.getPhoto();
@@ -364,12 +365,19 @@ public class SkillsHierarchieView extends DcemView {
 			List<SkillsEntity> skills = new ArrayList<SkillsEntity>(skillsEntitiesObj.size());
 			DcemAction dcemAction = operatorSessionBean.getPermission(new DcemAction(subject, SkillsConstants.APPROVE_SKILL));
 			for (Object skillObj : skillsEntitiesObj) {
-				skills.add((SkillsEntity) skillObj);
-				skillsLogic.approveSkills(dcemAction, skills);
+				SkillsEntity skill = (SkillsEntity) skillObj;
+				if (skill.getApprovalStatus().equals(ApprovalStatus.PENDING)) {
+					skills.add(skill);
+				}
 			}
-			reload();
-			PrimeFaces.current().ajax().update("organigramForm");
-			JsfUtils.addInfoMessage(resourceBundle, "skills.approvalSuccess");
+			if (skills.isEmpty()) {
+				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalFailedAlreadyApproved");				
+			} else {
+				skillsLogic.approveSkills(dcemAction, skills);
+				reload();
+				PrimeFaces.current().ajax().update("organigramForm");
+				JsfUtils.addInfoMessage(resourceBundle, "skills.approvalSuccess");
+			}
 		} catch (Exception e) {
 			JsfUtils.addErrorMessage(resourceBundle, "error.global");
 			logger.error("", e);

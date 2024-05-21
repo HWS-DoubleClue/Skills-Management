@@ -256,37 +256,36 @@
 						<h:outputText value="#{SkillsMsg['skillsUserDialog.properties']}" />
 					</f:facet>
 
-					<h:panelGrid columns="3" cellpadding="5" cellspacing="5" id="properties-grid-1">
+					<h:panelGrid columns="2" cellpadding="6" cellspacing="6" id="properties-grid-1">
 
 						<p:outputLabel for="@next" value="#{SkillsMsg['skillsUserDialog.reportsTo']} " />
-						<p:autoComplete id="reportsToDcemUser" minQueryLength="1" value="#{skillsUserDialog.reportsToUserLoginId}"
-							completeMethod="#{skillsUserDialog.completeUser}" effect="fade" size="20" forceSelection="true" dropdown="true"
-							emptyMessage="#{SkillsMsg['error.noItemsFound']}">
-						</p:autoComplete>
-
-						<p />
-
+						<h:panelGrid columns="2" cellpadding="2" cellspacing="2" id="reports-to-grid">
+							<p:avatar dynamicColor="true" size="large" shape="circle" >
+								<p:graphicImage value="#{skillsUserDialog.getReportsToUserPhoto()}" stream="false" />
+							</p:avatar>
+							<dc:autoCompleteUser id="autoUserReportsTo" userValue="#{skillsUserDialog.reportsToDcemUser}" required="false"
+								updateComponents="form:dialog-head-add-user" />
+						</h:panelGrid>
+						
 						<p:outputLabel for="@next" value="#{SkillsMsg['Skills.availability']} " />
-						<p:selectOneMenu value="#{skillsUserDialog.skillsUserEntity.availability}" id="availability" style="min-width: 10em !important" required="true">
-							<f:selectItems value="#{skillsUserDialog.skillsAvailabilitySelection}" />
-							<p:ajax event="change" update="form:tabs:available-from-extended" />
-						</p:selectOneMenu>
-
-						<h:panelGrid columns="2" cellpadding="0" cellspacing="0" id="available-from-extended">
-							<p:outputLabel for="@next" value="#{SkillsMsg['Skills.availability']}: " style="display:none" rendered="#{skillsUserDialog.isAvailableFrom()}" />
+						<h:panelGroup id="available-from-extended">
+							<p:selectOneMenu value="#{skillsUserDialog.skillsUserEntity.availability}" id="availability" style="min-width: 10em; margin-right: 10px" required="true">
+								<f:selectItems value="#{skillsUserDialog.skillsAvailabilitySelection}" />
+								<p:ajax event="change" update="form:tabs:available-from-extended" />
+							</p:selectOneMenu>
+	
+							<p:outputLabel for="@next" value="#{SkillsMsg['Skills.availability']}: " style="display:none;" rendered="#{skillsUserDialog.isAvailableFrom()}" />
 							<p:datePicker id="availableFromDate" value="#{skillsUserDialog.skillsUserEntity.availableFrom}" showIcon="true" showButtonBar="true" yearNavigator="true"
 								locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}" rendered="#{skillsUserDialog.isAvailableFrom()}" required="true">
 							</p:datePicker>
-						</h:panelGrid>
+						</h:panelGroup>
 					</h:panelGrid>
 
-					<h:panelGrid columns="3" cellpadding="5" cellspacing="5" id="properties-grid-2">
-						<p:selectBooleanCheckbox id="disable-notifications" itemLabel="#{SkillsMsg['skillsUserDialog.disableNotifications']}"
-							value="#{skillsUserDialog.skillsUserEntity.disableNotifications}" />
-						<p:spacer width="3em" />
-						<p:selectBooleanCheckbox id="receive-requests" itemLabel="#{SkillsMsg['skillsUserDialog.receiveRequests']}"
-							value="#{skillsUserDialog.skillsUserEntity.receiveRequests}" />
-					</h:panelGrid>
+					<p:selectBooleanCheckbox id="disable-notifications" itemLabel="#{SkillsMsg['skillsUserDialog.disableNotifications']}"
+						value="#{skillsUserDialog.skillsUserEntity.disableNotifications}" />
+
+					<p:selectBooleanCheckbox id="receive-requests" itemLabel="#{SkillsMsg['skillsUserDialog.receiveRequests']}"
+						value="#{skillsUserDialog.skillsUserEntity.receiveRequests}" style="margin-left: 100px" />
 					<p />
 					<p:outputLabel for="userDescription" value="#{SkillsMsg['Skills.description']} " />
 					<p:textEditor id="userDescription" value="#{skillsUserDialog.skillsUserEntity.description}" />

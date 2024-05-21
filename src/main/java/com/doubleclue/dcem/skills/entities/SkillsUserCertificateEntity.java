@@ -37,6 +37,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import com.doubleclue.dcem.as.entities.CloudSafeEntity;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
+import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 import com.doubleclue.dcem.skills.entities.enums.SkillsStatus;
 
 @NamedEntityGraphs({ @NamedEntityGraph(name = SkillsUserCertificateEntity.GRAPH_FILES, attributeNodes = { @NamedAttributeNode(value = "files") }), })
@@ -79,6 +80,7 @@ public class SkillsUserCertificateEntity extends EntityInterface implements Skil
 	@JoinColumn(referencedColumnName = "skills_certificate_id", foreignKey = @ForeignKey(name = "FK_CERTIFICATE_USERCERTIFICATE"), name = "skills_certificate_id", nullable = false, insertable = true, updatable = true)
 	private SkillsCertificateEntity skillsCertificateEntity;
 
+	@DcemCompare(ignore = true)
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_certificate_files", joinColumns = @JoinColumn(name = "certificate_id"), foreignKey = @ForeignKey(name = "FK_FILES_CERTIFICATE"), inverseJoinColumns = @JoinColumn(name = "file_id"), inverseForeignKey = @ForeignKey(name = "FK_CERTIFICATE_FILE"))
 	private List<CloudSafeEntity> files;

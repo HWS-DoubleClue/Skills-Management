@@ -130,7 +130,10 @@ public class SkillsUserDialog extends DcemDialog {
 
 	private SkillsUserEntity skillsUserEntity;
 
-	DcemUser dcemUser;
+	private DcemUser dcemUser;
+	private byte[] image;
+	private DcemUser reportsToDcemUser;
+	private byte[] reportsToImage;
 	private String action;
 	private int editIndex;
 	private boolean addUser;
@@ -138,7 +141,6 @@ public class SkillsUserDialog extends DcemDialog {
 	private boolean changedUserProfile;
 	private List<SelectItem> skillsStatusSelection;
 	private List<SelectItem> skillsAvailabilitySelection;
-	private byte[] image;
 
 	// #### Skills ####
 	private List<SkillsUserSkillEntity> userSkills;
@@ -186,25 +188,23 @@ public class SkillsUserDialog extends DcemDialog {
 		skillsUserEntity = (SkillsUserEntity) dcemView.getActionObject();
 		if (action.equals(DcemConstants.ACTION_EDIT) || action.equals(SkillsConstants.ACTION_EDIT_MYSKILLS)) {
 			addUser = false;
-			dcemUser = skillsUserEntity.getDcemUser();
+			dcemUser = userLogic.getUser(skillsUserEntity.getDcemUser().getId());
 			image = dcemUser.getPhoto();
-	//		userSkills = skillsUserEntity.getSkills();
+			reportsToDcemUser = skillsUserEntity.getReportsTo() == null ? null : userLogic.getUser(skillsUserEntity.getReportsTo().getId());
+			reportsToImage = reportsToDcemUser == null ? null : reportsToDcemUser.getPhoto();
 			userSkills = skillsUserLogic.getSkillsOfUser(skillsUserEntity.getId());
 			userCertificates = skillsCertificateLogic.getAllCertificatesFromUserWithFiles(skillsUserEntity);
 			userJobProfiles = skillsJobProfileEntityLogic.getJobProfilesOfUser(skillsUserEntity.getId());
-			// for (SkillsUserJobProfileEntity userJobProfile : userJobProfiles) {
-			// userJobProfile.getJobProfile().getSkillLevels().size(); // avoid lazy for computing match
-			// userJobProfile.getJobProfile().getCertificatesPriorities().size();
-			// }
 			for (SkillsUserCertificateEntity userCertificate : userCertificates) {
 				userCertificate.getSkillsCertificateEntity().getAppliesForSkills().size();
 			}
-			updateMatches(); // refresh matches and also avoid lazy later
-			reportsToUserLoginId = skillsUserEntity.getReportsTo() == null ? "" : skillsUserEntity.getReportsTo().getLoginId();
+			updateMatches();
 		} else if (action.equals(DcemConstants.ACTION_ADD)) {
-			image = null;
 			addUser = true;
 			dcemUser = null;
+			image = null;
+			reportsToDcemUser = null;
+			reportsToImage = null;
 			userSkills = new ArrayList<SkillsUserSkillEntity>();
 			userCertificates = new ArrayList<SkillsUserCertificateEntity>();
 			userJobProfiles = new ArrayList<SkillsUserJobProfileEntity>();
@@ -241,10 +241,7 @@ public class SkillsUserDialog extends DcemDialog {
 		} else {
 			oldSkillsUser = loadOldData(skillsUserEntity);
 		}
-		if (reportsToUserLoginId != null && reportsToUserLoginId.isEmpty() == false) {
-			DcemUser reportsToDcemUser = userLogic.getDistinctUser(reportsToUserLoginId);
-			skillsUserEntity.setReportsTo(reportsToDcemUser);
-		}
+		skillsUserEntity.setReportsTo(reportsToDcemUser);
 		if (AvailabilityStatus.AvailableFrom.equals(skillsUserEntity.getAvailability()) == false) {
 			skillsUserEntity.setAvailableFrom(null);
 		}
@@ -280,7 +277,7 @@ public class SkillsUserDialog extends DcemDialog {
 			}
 		}
 	}
-	
+
 	public void userListener() {
 		SkillsUserEntity selectedSkillsUser = skillsUserLogic.getSkillsUserById(dcemUser.getId());
 		if (selectedSkillsUser != null) {
@@ -288,13 +285,15 @@ public class SkillsUserDialog extends DcemDialog {
 			image = null;
 			JsfUtils.addErrorMessage(SkillsModule.RESOURCE_NAME, "skillsUserDialog.skillUserExistsAlready");
 		}
-		
+
 	}
 
 	@Override
 	public void leavingDialog() {
 		dcemUser = null;
 		image = null;
+		reportsToDcemUser = null;
+		reportsToImage = null;
 		// #### Skills ####
 		skillsUserEntity = null;
 		userSkills = null;
@@ -1005,13 +1004,26 @@ public class SkillsUserDialog extends DcemDialog {
 		}
 		return AvailabilityStatus.AvailableFrom.equals(skillsUserEntity.getAvailability());
 	}
-	
+
 	public StreamedContent getUserPhoto() {
 		try {
 			if (image == null) {
 				return JsfUtils.getDefaultUserImage();
 			} else {
 				InputStream in = new ByteArrayInputStream(image);
+				return DefaultStreamedContent.builder().contentType("image/png").stream(() -> in).build();
+			}
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public StreamedContent getReportsToUserPhoto() {
+		try {
+			if (reportsToImage == null) {
+				return JsfUtils.getDefaultUserImage();
+			} else {
+				InputStream in = new ByteArrayInputStream(reportsToImage);
 				return DefaultStreamedContent.builder().contentType("image/png").stream(() -> in).build();
 			}
 		} catch (Exception e) {
@@ -1033,7 +1045,6 @@ public class SkillsUserDialog extends DcemDialog {
 		this.skillsUserEntity = skillsUserEntity;
 	}
 
-	
 	public String getSkillNameWithParent() {
 		return skillNameWithParent;
 	}
@@ -1193,5 +1204,14 @@ public class SkillsUserDialog extends DcemDialog {
 		this.dcemUser = dcemUser;
 		this.image = dcemUser.getPhoto();
 	}
+	
+	public DcemUser getReportsToDcemUser() {
+		return reportsToDcemUser;
+	}
 
+	public void setReportsToDcemUser(DcemUser reportsToDcemUser) {
+		this.reportsToDcemUser = reportsToDcemUser;
+		this.reportsToImage = dcemUser.getPhoto();
+	}
+	
 }

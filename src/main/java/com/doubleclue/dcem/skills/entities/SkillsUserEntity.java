@@ -123,7 +123,6 @@ public class SkillsUserEntity extends EntityInterface implements Serializable, I
 	@ManyToOne
 	@JoinColumn(name = "skills_user_report_id", referencedColumnName = "dc_id", foreignKey = @ForeignKey(name = "FK_SKILLS_REPORT_USER"), nullable = true, insertable = true, updatable = true)
 	@DcemGui(subClass = "displayName", visible = false)
-	@DcemCompare (ignore = true)
 	private DcemUser reportsTo;
 	
 	@DcemGui (visible = false)

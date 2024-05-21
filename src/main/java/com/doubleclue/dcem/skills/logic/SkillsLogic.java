@@ -244,7 +244,9 @@ public class SkillsLogic {
 			em.remove(skillsEntity);
 			skillsName.add(skillsEntity.getName());
 		}
-		auditingLogic.addAudit(dcemAction, String.join(", ", skillsName));
+		if (dcemAction.getAction().equals(SkillsConstants.MERGE_SKILLS) == false) {
+			auditingLogic.addAudit(dcemAction, String.join(", ", skillsName));
+		}
 	}	
 
 	
@@ -302,6 +304,7 @@ public class SkillsLogic {
 		replaceChildrenReference(mainSkill, mergingSkill);
 		eventMerge.fire(new SkillsMergeDTO(mainSkill, mergingSkill));
 		deleteSkill(dcemAction, mergingSkill);
+		auditingLogic.addAudit(dcemAction, String.format("'%s' with children '%s'  -> '%s'", mergingSkill.getName(), mergingSkill.getChildren(), mainSkill.getName())); 
 	}
 
 	private void replaceSkillInCertificate(SkillsEntity mainSkill, SkillsEntity mergingSkill) throws Exception {

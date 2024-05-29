@@ -1,7 +1,5 @@
 package com.doubleclue.dcem.skills.gui;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
@@ -9,14 +7,9 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.primefaces.PrimeFaces;
-
 import com.doubleclue.dcem.core.DcemConstants;
-import com.doubleclue.dcem.core.gui.DcemApplicationBean;
 import com.doubleclue.dcem.core.gui.DcemView;
 import com.doubleclue.dcem.core.gui.JsfUtils;
-import com.doubleclue.dcem.skills.entities.SkillsCertificateEntity;
-import com.doubleclue.dcem.skills.logic.SkillsCertificateLogic;
 import com.doubleclue.dcem.skills.logic.SkillsConstants;
 import com.doubleclue.dcem.skills.logic.SkillsModule;
 import com.doubleclue.dcem.skills.subjects.SkillsCertificateSubject;
@@ -31,12 +24,6 @@ public class SkillsCertificateView extends DcemView {
 
 	@Inject
 	private SkillsCertificateDialog skillsCertificateDialog;
-	
-	@Inject
-	private SkillsCertificateLogic skillsCertificateLogic;
-
-	@Inject
-	DcemApplicationBean applicationBean;
 	
 	ResourceBundle resourceBundle;
 

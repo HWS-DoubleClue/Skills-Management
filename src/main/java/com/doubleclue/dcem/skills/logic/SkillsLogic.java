@@ -21,13 +21,11 @@ import javax.persistence.criteria.Root;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.PrimeFaces;
 
 import com.doubleclue.dcem.core.DcemConstants;
 import com.doubleclue.dcem.core.entities.DcemAction;
 import com.doubleclue.dcem.core.exceptions.DcemErrorCodes;
 import com.doubleclue.dcem.core.exceptions.DcemException;
-import com.doubleclue.dcem.core.gui.JsfUtils;
 import com.doubleclue.dcem.core.jpa.DcemTransactional;
 import com.doubleclue.dcem.core.logic.AuditingLogic;
 import com.doubleclue.dcem.skills.entities.SkillsCertificateEntity;
@@ -252,7 +250,6 @@ public class SkillsLogic {
 	
 	@DcemTransactional
 	public void approveSkills(DcemAction dcemAction,  List<SkillsEntity> skillsEntities) throws Exception {
-		StringBuffer sb = new StringBuffer();
 		List<String> skillNames = new ArrayList<String>(skillsEntities.size());
 		for (SkillsEntity skill : skillsEntities) {
 			skill = getSkillById(skill.getId());

@@ -1,6 +1,5 @@
 package com.doubleclue.dcem.skills.entities;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,8 +24,6 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SortNatural;
 
 import com.doubleclue.dcem.core.entities.DcemUser;

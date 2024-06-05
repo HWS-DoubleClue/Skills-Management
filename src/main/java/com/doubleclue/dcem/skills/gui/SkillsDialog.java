@@ -141,7 +141,7 @@ public class SkillsDialog extends DcemDialog {
 				skillsEntity.setParent(skillRoot);
 			}
 			if (skillsEntity.getParent().getApprovalStatus() == ApprovalStatus.PENDING) {
-				throw new SkillsException(SkillsErrorCodes.CANNOT_ADD_NON_APPROVED_SKILL, null);
+				throw new SkillsException(SkillsErrorCodes.PARENT_MUST_BE_APPROVED, null);
 			}
 		}
 		
@@ -151,6 +151,10 @@ public class SkillsDialog extends DcemDialog {
 				selectedParentId = ((SkillsEntity) skillsHierarchieView.getSelectionNode().getData()).getId();
 			} else {
 				selectedParentId = skillRoot.getId();
+			}
+			skillsEntity.setParent(skillsLogic.getSkillById(selectedParentId));
+			if (skillsEntity.getParent().getApprovalStatus() == ApprovalStatus.PENDING) {
+				throw new SkillsException(SkillsErrorCodes.PARENT_MUST_BE_APPROVED, null);
 			}
 			skillsEntity.setRequestedFrom(operatorSessionBean.getDcemUser());
 			skillsEntity.setApprovalStatus(ApprovalStatus.PENDING);

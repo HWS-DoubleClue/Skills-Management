@@ -686,7 +686,7 @@ public class SkillsUserDialog extends DcemDialog {
 		} catch (IOException e) {
 			JsfUtils.addErrorMessageToComponentId(JsfUtils.getStringSafely(resourceBundle, "skillsUserDialog.error.unableToUploadFile"),
 					"certificateDialogForm:certificateDialogMsg");
-			logger.log(Level.ERROR, "{} >> Unable to upload file {} :: {}", e.getClass().getSimpleName(), tempFile.getName(), e.getMessage());
+			logger.error("Unable to upload file " + tempFile.getName(), e);
 			return;
 		} finally {
 			if (is != null) {
@@ -695,7 +695,7 @@ public class SkillsUserDialog extends DcemDialog {
 				} catch (IOException e) {
 					JsfUtils.addErrorMessageToComponentId(JsfUtils.getStringSafely(resourceBundle, "skillsUserDialog.error.unableToLoadFile"),
 							"certificateDialogForm:certificateDialogMsg");
-					logger.log(Level.ERROR, "{} >> Unable to load file {} :: {}", e.getClass().getSimpleName(), tempFile.getName(), e.getMessage());
+					logger.error("Unable to load file " + tempFile.getName(), e);
 				}
 			}
 
@@ -705,7 +705,7 @@ public class SkillsUserDialog extends DcemDialog {
 				} catch (IOException e) {
 					JsfUtils.addErrorMessageToComponentId(JsfUtils.getStringSafely(resourceBundle, "skillsUserDialog.error.unableToLoadFile"),
 							"certificateDialogForm:certificateDialogMsg");
-					logger.log(Level.ERROR, "{} >> Unable to save file {} :: {}", e.getClass().getSimpleName(), tempFile.getName(), e.getMessage());
+					logger.error("Unable to save file " + tempFile.getName(), e);
 				}
 			}
 		}
@@ -738,7 +738,7 @@ public class SkillsUserDialog extends DcemDialog {
 		} catch (Exception e) {
 			JsfUtils.addErrorMessageToComponentId(JsfUtils.getStringSafely(resourceBundle, "skillsUserDialog.error.unableToDownloadFile"),
 					"certificateDialogForm:certificateDialogMsg");
-			logger.log(Level.ERROR, "{} > Unable to download file {} :: {}", e.getClass().getSimpleName(), downloadFile.getName(), e.getMessage());
+			logger.error("Unable to download file " + downloadFile.getName(), e);
 		}
 	}
 
@@ -764,8 +764,7 @@ public class SkillsUserDialog extends DcemDialog {
 		} catch (Exception e) {
 			JsfUtils.addErrorMessageToComponentId(JsfUtils.getStringSafely(resourceBundle, "skillsUserDialog.error.unableToDownloadFile"),
 					"certificateDialogForm:certificateDialogMsg");
-			logger.log(Level.INFO, "{} > Unable to download archive of selected files {} :: {}", e.getClass().getSimpleName(),
-					SkillsConstants.CERTIFICATES_DATA_ZIP, e.getMessage());
+			logger.error("Unable to download archive of selected files ", e);
 			FacesContext.getCurrentInstance().responseComplete();
 		}
 	}
@@ -785,8 +784,7 @@ public class SkillsUserDialog extends DcemDialog {
 				zipOutputStream.write(buffer, 0, length);
 			}
 		} catch (Exception e) {
-			logger.log(Level.INFO, "{} > Unable to create archive {} :: {}", e.getClass().getSimpleName(), SkillsConstants.CERTIFICATES_DATA_ZIP,
-					e.getMessage());
+			logger.info("Unable to create archive ", e);
 			throw e;
 		}
 	}
@@ -1017,7 +1015,7 @@ public class SkillsUserDialog extends DcemDialog {
 			return null;
 		}
 	}
-	
+
 	public StreamedContent getReportsToUserPhoto() {
 		try {
 			if (reportsToImage == null) {
@@ -1204,7 +1202,7 @@ public class SkillsUserDialog extends DcemDialog {
 		this.dcemUser = dcemUser;
 		this.image = dcemUser.getPhoto();
 	}
-	
+
 	public DcemUser getReportsToDcemUser() {
 		return reportsToDcemUser;
 	}
@@ -1213,5 +1211,5 @@ public class SkillsUserDialog extends DcemDialog {
 		this.reportsToDcemUser = reportsToDcemUser;
 		this.reportsToImage = dcemUser.getPhoto();
 	}
-	
+
 }

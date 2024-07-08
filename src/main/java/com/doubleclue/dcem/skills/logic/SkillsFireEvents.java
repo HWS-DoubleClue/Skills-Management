@@ -13,4 +13,6 @@ public interface SkillsFireEvents {
 	
 	public void deleteSkillsLevelListener(@Observes List<SkillsLevelEntity> skillsLevelEntities) throws Exception;
 	
+	public void mergeSkillsListener(@Observes SkillsMergeDTO skillsMergeDTO) throws Exception;
+	
 }

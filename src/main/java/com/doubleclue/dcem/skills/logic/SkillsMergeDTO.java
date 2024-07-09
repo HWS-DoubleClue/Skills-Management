@@ -7,7 +7,7 @@ import com.doubleclue.dcem.skills.entities.SkillsEntity;
 public class SkillsMergeDTO {
 
 	private SkillsEntity mainSkill;
-	private SkillsEntity mergingSkills;
+	private SkillsEntity mergingSkill;
 
 	public SkillsMergeDTO() {
 
@@ -15,7 +15,7 @@ public class SkillsMergeDTO {
 
 	public SkillsMergeDTO(SkillsEntity mainSkill, SkillsEntity mergingSkill) {
 		this.mainSkill = mainSkill;
-		this.mergingSkills = mergingSkill;
+		this.mergingSkill = mergingSkill;
 	}
 
 	public SkillsEntity getMainSkill() {
@@ -26,22 +26,22 @@ public class SkillsMergeDTO {
 		this.mainSkill = mainSkill;
 	}
 
-	public SkillsEntity getMergingSkills() {
-		return mergingSkills;
+	public SkillsEntity getMergingSkill() {
+		return mergingSkill;
 	}
 
-	public void setMergingSkills(SkillsEntity mergingSkills) {
-		this.mergingSkills = mergingSkills;
+	public void setMergingSkill(SkillsEntity mergingSkill) {
+		this.mergingSkill = mergingSkill;
 	}
 
 	@Override
 	public String toString() {
-		return "SkillsMergeDTO [mainSkill=" + mainSkill + ", mergingSkills=" + mergingSkills + "]";
+		return "SkillsMergeDTO [mainSkill=" + mainSkill + ", mergingSkill=" + mergingSkill + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(mainSkill, mergingSkills);
+		return Objects.hash(mainSkill, mergingSkill);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class SkillsMergeDTO {
 		if (getClass() != obj.getClass())
 			return false;
 		SkillsMergeDTO other = (SkillsMergeDTO) obj;
-		return Objects.equals(mainSkill, other.mainSkill) && Objects.equals(mergingSkills, other.mergingSkills);
+		return Objects.equals(mainSkill, other.mainSkill) && Objects.equals(mergingSkill, other.mergingSkill);
 	}
 
 }

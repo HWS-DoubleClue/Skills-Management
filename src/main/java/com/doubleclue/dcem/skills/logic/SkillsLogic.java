@@ -2,7 +2,6 @@ package com.doubleclue.dcem.skills.logic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -32,7 +31,6 @@ import com.doubleclue.dcem.skills.entities.SkillsCertificateEntity;
 import com.doubleclue.dcem.skills.entities.SkillsEntity;
 import com.doubleclue.dcem.skills.entities.SkillsEntity_;
 import com.doubleclue.dcem.skills.entities.SkillsJobProfileEntity;
-import com.doubleclue.dcem.skills.entities.SkillsLevelEntity;
 import com.doubleclue.dcem.skills.entities.SkillsUserEntity;
 import com.doubleclue.dcem.skills.entities.SkillsUserSkillEntity;
 import com.doubleclue.dcem.skills.entities.enums.ApprovalStatus;
@@ -314,60 +312,17 @@ public class SkillsLogic {
 		}
 	}
 
-	private void replaceSkillInUser(SkillsEntity mainSkill, SkillsEntity mergingSkill) {
+	private void replaceSkillInUser(SkillsEntity mainSkill, SkillsEntity mergingSkill) throws Exception {
 		List<SkillsUserEntity> skillsUsers = skillsUserLogic.getSkillsUserBySkill(mergingSkill);
 		for (SkillsUserEntity skillsUser : skillsUsers) {
-			boolean isMainSkillUsed = false;
-			List<SkillsUserSkillEntity> userMergingSkills = new ArrayList<SkillsUserSkillEntity>();
-
-			Iterator<SkillsUserSkillEntity> itr = skillsUser.getSkills().iterator();
-			while (itr.hasNext()) {
-				SkillsUserSkillEntity userSkill = itr.next();
-				if (userSkill.getSkill().equals(mainSkill)) {
-					isMainSkillUsed = true;
-				} else if (userSkill.getSkill().equals(mergingSkill)) {
-					userMergingSkills.add(userSkill);
-					itr.remove();
-				}
-			}
-
-			if (isMainSkillUsed) {
-				for (SkillsUserSkillEntity userSkill : userMergingSkills) {
-					em.remove(userSkill);
-				}
-			} else {
-				for (SkillsUserSkillEntity userSkill : userMergingSkills) {
-					userSkill.setSkill(mainSkill);
-					skillsUser.getSkills().add(userSkill);
-					em.merge(userSkill);
-				}
-			}
+			skillsUserLogic.mergeSkillInUserSkillEntities(mergingSkill, mainSkill, skillsUser.getSkills());
 		}
 	}
 
 	private void replaceSkillInJobProfile(SkillsEntity mainSkill, SkillsEntity mergingSkill) throws Exception {
 		List<SkillsJobProfileEntity> jobProfiles = skillsJobProfileEntityLogic.getJobProfilesBySkill(mergingSkill);
 		for (SkillsJobProfileEntity jobProfile : jobProfiles) {
-			boolean isMainSkillUsed = false;
-			SkillsLevelEntity mergingSkillWithLevel = null;
-			Iterator<SkillsLevelEntity> itr = jobProfile.getSkillLevels().iterator();
-			while (itr.hasNext()) {
-				SkillsLevelEntity skillsLevel = itr.next();
-				if (skillsLevel.getSkill().equals(mainSkill)) {
-					isMainSkillUsed = true;
-				} else if (skillsLevel.getSkill().equals(mergingSkill)) {
-					mergingSkillWithLevel = skillsLevel;
-					itr.remove();
-				}
-				if (isMainSkillUsed && mergingSkillWithLevel != null) {
-					break;
-				}
-			}
-			if (isMainSkillUsed == false) {
-				SkillsLevelEntity mergedSkillLevel = skillsLevelLogic
-						.getOrCreateSkillLevel(new SkillsLevelEntity(mainSkill, mergingSkillWithLevel.getLevel(), mergingSkillWithLevel.getPriority()));
-				jobProfile.getSkillLevels().add(mergedSkillLevel);
-			}
+			skillsLevelLogic.mergeSkillInSkillLevelEntities(mergingSkill, mainSkill, jobProfile.getSkillLevels());
 			em.merge(jobProfile);
 		}
 		for (SkillsUserEntity skillsUserEntity : skillsUserLogic.getUserByJobprofiles(jobProfiles)) {

@@ -1,5 +1,7 @@
 package com.doubleclue.dcem.skills.logic;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -100,6 +102,33 @@ public class SkillsLevelLogic {
 		eventSkillLevel.fire(skillsLevelEntities);
 		for (SkillsLevelEntity skillsLevel : skillsLevelEntities) {
 			em.remove(skillsLevel);
+		}
+	}
+	
+	@DcemTransactional
+	public void mergeSkillInSkillLevelEntities(SkillsEntity mergingSkill, SkillsEntity targetSkill, Collection<SkillsLevelEntity> skillsLevelEntities)
+			throws Exception {
+		if (skillsLevelEntities.isEmpty()) {
+			return;
+		}
+		SkillsLevelEntity mergingSkillWithLevel = null;
+		SkillsLevelEntity mainSkillWithLevel = null;
+		Iterator<SkillsLevelEntity> itr = skillsLevelEntities.iterator();
+		while (itr.hasNext()) {
+			SkillsLevelEntity skillsLevel = itr.next();
+			if (skillsLevel.getSkill().equals(targetSkill)) {
+				mainSkillWithLevel = skillsLevel;
+			} else if (skillsLevel.getSkill().equals(mergingSkill)) {
+				mergingSkillWithLevel = skillsLevel;
+				itr.remove();
+			}
+			if (mainSkillWithLevel != null && mergingSkillWithLevel != null) {
+				break;
+			}
+		}
+		if (mainSkillWithLevel == null && mergingSkillWithLevel != null) {
+			SkillsLevelEntity newMergedSkillLevel = getOrCreateSkillLevel(new SkillsLevelEntity(targetSkill, mergingSkillWithLevel.getLevel(), mergingSkillWithLevel.getPriority()));
+			skillsLevelEntities.add(newMergedSkillLevel);
 		}
 	}
 }

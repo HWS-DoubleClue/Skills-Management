@@ -2,7 +2,9 @@ package com.doubleclue.dcem.skills.logic;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +74,7 @@ public class SkillsUserLogic {
 
 	@Inject
 	OperatorSessionBean operatorSessionBean;
-	
+
 	@Inject
 	AuditingLogic auditingLogic;
 
@@ -178,14 +180,13 @@ public class SkillsUserLogic {
 			logger.error("Could not delete user from skills module: " + dcemUser.getLoginId(), e);
 		}
 	}
-	
 
 	public SkillsUserEntity getSkillsUserById(int id) {
 		return em.find(SkillsUserEntity.class, id);
 	}
-	
+
 	@DcemTransactional
-	public SkillsUserEntity retrieveSkillsUserByDcemUser (DcemUser dcemUser) {
+	public SkillsUserEntity retrieveSkillsUserByDcemUser(DcemUser dcemUser) {
 		SkillsUserEntity skillsUserEntity = em.find(SkillsUserEntity.class, dcemUser.getId());
 		if (skillsUserEntity == null) {
 			skillsUserEntity = new SkillsUserEntity(dcemUser);
@@ -413,10 +414,41 @@ public class SkillsUserLogic {
 		List<SkillsUserEntity> resultList = em.createQuery(criteriaQuery).getResultList();
 		return resultList;
 	}
-	
+
 	public List<DcemUser> getReciepientsForRequests() throws Exception {
 		TypedQuery<DcemUser> query = em.createNamedQuery(SkillsUserEntity.GET_RECIPIENTS_FOR_REQUESTS, DcemUser.class);
 		return query.getResultList();
 	}
 
+	@DcemTransactional
+	public void mergeSkillInUserSkillEntities(SkillsEntity mergingSkill, SkillsEntity targetSkill,
+			Collection<SkillsUserSkillEntity> skillsUserSkillEntities) throws Exception {
+		if (skillsUserSkillEntities.isEmpty()) {
+			return;
+		}
+		List<SkillsUserSkillEntity> userMergingSkills = new ArrayList<SkillsUserSkillEntity>();
+		List<SkillsUserSkillEntity> userTargetSkills = new ArrayList<SkillsUserSkillEntity>();
+
+		Iterator<SkillsUserSkillEntity> itr = skillsUserSkillEntities.iterator();
+		while (itr.hasNext()) {
+			SkillsUserSkillEntity userSkill = itr.next();
+			if (userSkill.getSkill().equals(targetSkill)) {
+				userTargetSkills.add(userSkill);
+			} else if (userSkill.getSkill().equals(mergingSkill)) {
+				userMergingSkills.add(userSkill);
+				itr.remove();
+			}
+		}
+		if (userTargetSkills.isEmpty()) {
+			for (SkillsUserSkillEntity userSkill : userMergingSkills) {
+				userSkill.setSkill(targetSkill);
+				SkillsUserSkillEntity mergedUserSkill = em.merge(userSkill);
+				skillsUserSkillEntities.add(mergedUserSkill);
+			}
+		} else {
+			for (SkillsUserSkillEntity userSkill : userMergingSkills) {
+				em.remove(userSkill);
+			}
+		}
+	}
 }

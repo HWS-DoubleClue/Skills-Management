@@ -1,5 +1,6 @@
 package com.doubleclue.dcem.skills.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +35,8 @@ import com.doubleclue.dcem.core.jpa.VariableType;
 import com.doubleclue.dcem.core.utils.compare.DcemCompare;
 import com.doubleclue.dcem.skills.entities.enums.ApprovalStatus;
 import com.doubleclue.dcem.skills.logic.SkillsConstants;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -45,7 +48,8 @@ import com.doubleclue.dcem.skills.logic.SkillsConstants;
 		@NamedQuery(name = SkillsEntity.GET_PARENTLESS_SKILLS, query = "SELECT tt FROM SkillsEntity tt LEFT JOIN tt.parent pp WHERE pp is NULL "),
 		@NamedQuery(name = SkillsEntity.GET_BY_NAME, query = "SELECT tt FROM SkillsEntity tt WHERE LOWER(tt.name) LIKE LOWER(?1) ORDER BY tt.name ASC"),
 		@NamedQuery(name = SkillsEntity.GET_APPROVED_SKILLS, query = "SELECT tt FROM SkillsEntity tt WHERE tt.approvalStatus = com.doubleclue.dcem.skills.entities.enums.ApprovalStatus.APPROVED ORDER BY tt.name ASC"), })
-public class SkillsEntity extends EntityInterface {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class SkillsEntity extends EntityInterface implements Serializable {
 
 	public static final String GET_ALL = "skills.all";
 	public static final String GET_PARENTLESS_SKILLS = "skills.withoutParent";
@@ -66,10 +70,12 @@ public class SkillsEntity extends EntityInterface {
 	@DcemGui(name = "Parent", subClass = "name")
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(referencedColumnName = "skills_id", foreignKey = @ForeignKey(name = "FK_SKILLS_PARENT"), name = "parent_id", nullable = true, insertable = true, updatable = true)
+	@JsonIgnore
 	private SkillsEntity parent;
 	
 	@DcemGui(visible = false, variableType = VariableType.LIST)
 	@OneToMany(mappedBy = "parent")
+	@JsonIgnore
 	private List<SkillsEntity> children;
 
 	@DcemGui
@@ -89,6 +95,7 @@ public class SkillsEntity extends EntityInterface {
 	@DcemGui
 	@ManyToOne
 	@JoinColumn(name = "requested_from_id", referencedColumnName = "dc_id", foreignKey = @ForeignKey(name = "FK_SKILLS_REQUESTEDFROM"), insertable = true)
+	@JsonIgnore
 	private DcemUser requestedFrom;
 
 	@DcemGui
@@ -124,10 +131,7 @@ public class SkillsEntity extends EntityInterface {
 		this.name = name;
 	}
 
-	public String getNameWithAbbr() {
-		return name + " (" + getAbbreviation() + ")";
-	}
-
+	
 	public String getAbbreviation() {
 		return abbreviation;
 	}
@@ -144,15 +148,14 @@ public class SkillsEntity extends EntityInterface {
 		this.description = description;
 	}
 
+	@JsonIgnore
 	public SkillsEntity getParent() {
 		return parent;
 	}
 
 	public void setParent(SkillsEntity parent) {
 		this.parent = parent;
-	}
-
-	
+	}	
 
 	@Override
 	public String toString() {

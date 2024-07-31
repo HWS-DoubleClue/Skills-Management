@@ -1,5 +1,6 @@
 package com.doubleclue.dcem.skills.entities;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
@@ -25,6 +26,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
 import com.doubleclue.dcem.skills.entities.enums.SkillsLevel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -33,7 +36,8 @@ import com.doubleclue.dcem.skills.entities.enums.SkillsLevel;
 	@NamedQuery(name = SkillsLevelEntity.GET_ALL_SKILL_LEVELS_BY_SKILLS, query = "SELECT DISTINCT sl FROM SkillsLevelEntity sl where sl.skill in ?1"),
 	@NamedQuery(name = SkillsLevelEntity.GET_SKILLLEVEL, query = "SELECT sl FROM SkillsLevelEntity sl WHERE sl.skill = ?1 AND sl.level = ?2 AND sl.priority = ?3"),
 })
-public class SkillsLevelEntity extends EntityInterface implements Comparable<SkillsLevelEntity>  {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class SkillsLevelEntity extends EntityInterface implements Comparable<SkillsLevelEntity>, Serializable  {
 
 	public static final String GET_ALL_SKILL_LEVELS_BY_SKILLS = "skillsLevel.getAllBySkill";
 	public static final String GET_SKILLLEVEL = "skillsLevel.getSkilllevel";

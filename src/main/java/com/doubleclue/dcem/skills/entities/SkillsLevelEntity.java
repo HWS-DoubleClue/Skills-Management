@@ -90,10 +90,6 @@ public class SkillsLevelEntity extends EntityInterface implements Comparable<Ski
 			id = null;
 		}
 	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
 	
 
 	public SkillsLevel getLevel() {

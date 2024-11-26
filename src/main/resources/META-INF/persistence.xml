@@ -11,6 +11,7 @@
 		<class>com.doubleclue.dcem.skills.entities.SkillsIssuerEntity</class>
 		<class>com.doubleclue.dcem.as.entities.CloudSafeEntity</class>
 		<class>com.doubleclue.dcem.as.entities.CloudSafeTagEntity</class>
+		<class>com.doubleclue.dcem.as.entities.CloudSafeThumbnailEntity</class>
 		<class>com.doubleclue.dcem.as.entities.DeviceEntity</class>
 		<class>com.doubleclue.dcem.as.entities.CloudSafeContentEntity</class>
 		<class>com.doubleclue.dcem.as.entities.AsVersionEntity</class>

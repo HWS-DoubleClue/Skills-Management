@@ -106,7 +106,7 @@ public class SkillsUserLogic {
 			auditingLogic.addAudit(dcemAction, skillsUserWithCertificates);
 			clearUserDataInDB(skillsUserWithoutNewUploadedCertificates);
 			if (deletedFiles != null) {
-				List<CloudSafeDto> deletedDbFiles = cloudSafeLogic.deleteCloudSafeFiles(deletedFiles, null, false);
+				List<CloudSafeDto> deletedDbFiles = cloudSafeLogic.deleteFiles(deletedFiles, null);
 				cloudSafeLogic.deleteCloudSafeFilesContent(deletedDbFiles);
 			}
 			em.merge(skillsUserWithCertificates);

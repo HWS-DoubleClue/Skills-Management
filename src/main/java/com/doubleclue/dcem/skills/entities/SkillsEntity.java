@@ -48,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 		@NamedQuery(name = SkillsEntity.GET_PARENTLESS_SKILLS, query = "SELECT tt FROM SkillsEntity tt LEFT JOIN tt.parent pp WHERE pp is NULL "),
 		@NamedQuery(name = SkillsEntity.GET_BY_NAME, query = "SELECT tt FROM SkillsEntity tt WHERE LOWER(tt.name) LIKE LOWER(?1) ORDER BY tt.name ASC"),
 		@NamedQuery(name = SkillsEntity.GET_APPROVED_SKILLS, query = "SELECT tt FROM SkillsEntity tt WHERE tt.approvalStatus = com.doubleclue.dcem.skills.entities.enums.ApprovalStatus.APPROVED ORDER BY tt.name ASC"), })
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class SkillsEntity extends EntityInterface implements Serializable {
 
 	public static final String GET_ALL = "skills.all";
@@ -117,10 +117,6 @@ public class SkillsEntity extends EntityInterface implements Serializable {
 		} else {
 			id = null;
 		}
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getName() {

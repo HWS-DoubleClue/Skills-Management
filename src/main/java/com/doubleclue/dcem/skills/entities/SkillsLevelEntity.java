@@ -27,7 +27,7 @@ import com.doubleclue.dcem.core.entities.EntityInterface;
 import com.doubleclue.dcem.core.gui.DcemGui;
 import com.doubleclue.dcem.skills.entities.enums.SkillsLevel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -36,15 +36,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 	@NamedQuery(name = SkillsLevelEntity.GET_ALL_SKILL_LEVELS_BY_SKILLS, query = "SELECT DISTINCT sl FROM SkillsLevelEntity sl where sl.skill in ?1"),
 	@NamedQuery(name = SkillsLevelEntity.GET_SKILLLEVEL, query = "SELECT sl FROM SkillsLevelEntity sl WHERE sl.skill = ?1 AND sl.level = ?2 AND sl.priority = ?3"),
 })
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SkillsLevelEntity extends EntityInterface implements Comparable<SkillsLevelEntity>, Serializable  {
 
+
+	private static final long serialVersionUID = 1L;
 	public static final String GET_ALL_SKILL_LEVELS_BY_SKILLS = "skillsLevel.getAllBySkill";
 	public static final String GET_SKILLLEVEL = "skillsLevel.getSkilllevel";
 
 	@Id
 	@Column(name = "skills_level_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private Integer id;
 
 	@DcemGui(subClass = "name")
@@ -83,6 +85,7 @@ public class SkillsLevelEntity extends EntityInterface implements Comparable<Ski
 	}
 
 	@Override
+	@JsonIgnore
 	public void setId(Number id) {
 		if (id != null) {
 			this.id = id.intValue();
@@ -91,9 +94,9 @@ public class SkillsLevelEntity extends EntityInterface implements Comparable<Ski
 		}
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+//	public void setId(Integer id) {
+//		this.id = id;
+//	}
 	
 
 	public SkillsLevel getLevel() {

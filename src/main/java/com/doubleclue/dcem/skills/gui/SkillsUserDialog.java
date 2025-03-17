@@ -711,7 +711,7 @@ public class SkillsUserDialog extends DcemDialog {
 		}
 
 		CloudSafeEntity cloudSafeEntity = new CloudSafeEntity(CloudSafeOwner.GLOBAL, (DcemUser) null, (DeviceEntity) null, (String) null, (LocalDateTime) null,
-				CloudSafeOptions.ENC.name(), false, cloudSafeRoot, operatorSessionBean.getDcemUser());
+				CloudSafeOptions.ENC.name(), false, cloudSafeRoot);
 		cloudSafeEntity.setLength(event.getFile().getSize());
 		CloudSafeUploadFile newFile = new CloudSafeUploadFile(event.getFile().getFileName(), tempFile, cloudSafeEntity);
 		newUploadedFiles.add(newFile);
@@ -811,8 +811,8 @@ public class SkillsUserDialog extends DcemDialog {
 				}
 			}
 			if (Objects.isNull(selectedUploadedFile.file) == true) {
-				skillsUserCertificateEntity.getFiles().remove(selectedUploadedFile.cloudSafeEntity);
-				deletedFiles.add(selectedUploadedFile.cloudSafeEntity);
+				skillsUserCertificateEntity.getFiles().remove(selectedUploadedFile.getCloudSafeEntity());
+				deletedFiles.add(selectedUploadedFile.getCloudSafeEntity());
 			}
 		}
 		selectedFiles = null;

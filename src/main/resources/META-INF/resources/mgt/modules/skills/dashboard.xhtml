@@ -131,8 +131,8 @@
 								<f:facet name="filter">
 									<p:datePicker oncomplete="PF('userTableVar').filter()" id="availableFromDate" showIcon="true" showButtonBar="true" yearNavigator="true"
 										locale="#{operatorSession.locale}" pattern="#{operatorSession.datePattern}" styleClass="datePickerInput">
-										<p:ajax event="dateSelect" oncomplete="PF('userTableVar').filter()" />
-										<p:watermark value="#{SkillsMsg['SkillsUser.availableFrom']}" for="availableFromDate"></p:watermark>
+										<p:ajax event="dateSelect" oncomplete="PF('userTableVar').filter()" form="" />
+										<!-- <p:watermark value="#{SkillsMsg['SkillsUser.availableFrom']}" for="availableFromDate"></p:watermark> -->
 									</p:datePicker>
 								</f:facet>
 								<h:outputText value="#{skillsDashboardView.getAvailability(skillsUser.skillsUserEntity)}" />
